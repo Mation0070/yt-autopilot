@@ -63,6 +63,7 @@ def sheet_rows():
 
 # ---------------------------------------------------------------- AI (Gemini, free tier)
 _MODELS = None
+_GOOD = None
 
 
 def available_models(key):
@@ -95,6 +96,9 @@ def gemini(prompt, want_json=True, temperature=0.8):
     body = {"contents": [{"parts": [{"text": prompt}]}], "generationConfig": {"temperature": temperature}}
     if want_json:
         body["generationConfig"]["responseMimeType"] = "application/json"
+    global _GOOD
+    if _GOOD:
+        models = [_GOOD] + models
     last = None
     for m in dict.fromkeys(models):
         for attempt in range(2):
@@ -107,9 +111,12 @@ def gemini(prompt, want_json=True, temperature=0.8):
                 try:
                     txt = "".join(p.get("text", "") for p in r.json()["candidates"][0]["content"]["parts"])
                     if not want_json:
+                        _GOOD = m
                         return txt
                     txt = re.sub(r"^```(?:json)?|```$", "", txt.strip()).strip()
-                    return json.loads(txt)
+                    out = json.loads(txt)
+                    _GOOD = m
+                    return out
                 except Exception as e:
                     last = f"bad response from {m}: {e}"; time.sleep(5); continue
             last = f"{m}: HTTP {r.status_code} {r.text[:300]}"
@@ -222,13 +229,16 @@ RECENT HEADLINES:
 {news or 'none'}"""
     s = gemini(prompt)
     # second pass: fact check against sources
-    checked = gemini(f"""You are a strict fact-checker. Compare the SCRIPT JSON to the SOURCES.
+    try:
+        checked = gemini(f"""You are a strict fact-checker. Compare the SCRIPT JSON to the SOURCES.
 Remove or fix any sentence containing a claim (number, date, name, event, quote) not supported by the sources.
 Keep everything else word-for-word, keep the same JSON structure and keys, keep it flowing naturally.
 Return only the corrected JSON.
 SCRIPT: {json.dumps(s, ensure_ascii=False)}
 SOURCES: {sources}
 HEADLINES: {news or 'none'}""", temperature=0.2)
+    except Exception as e:
+        log("fact-check pass skipped:", str(e)[:200]); checked = None
     if isinstance(checked, dict) and checked.get("segments"):
         s = checked
     s["segments"] = [g for g in s["segments"] if g.get("narration", "").strip()]
