@@ -12,7 +12,7 @@ voice_rate: "+4%"
 # "public" once YouTube approves your API audit. Until then YouTube forces "private" anyway.
 privacy: public
 
-gemini_model: gemini-2.5-flash
+gemini_model: gemini-3.8-flash
 
 # Stock-footage searches used when a scene finds nothing
 fallback_footage:
