@@ -1,7 +1,7 @@
 """YouTube autopilot: topic -> research -> script -> voice -> footage -> captions -> render -> upload.
 
 Usage:  python pipeline/main.py long|short [--no-upload]
-Env:    GEMINI_API_KEY, PEXELS_API_KEY, YT_CLIENT_ID, YT_CLIENT_SECRET, YT_REFRESH_TOKEN,
+Env:    GEMINI_API_KEY, PIXABAY_API_KEY (or PEXELS_API_KEY), YT_CLIENT_ID, YT_CLIENT_SECRET, YT_REFRESH_TOKEN,
         SHEET_CSV_URL (optional: published Google Sheet; put STOP in cell A1 to pause)
 """
 import asyncio, csv, io, json, math, os, pathlib, random, re, shutil, subprocess, sys, time
@@ -234,18 +234,48 @@ def voice_segments(segs, d):
 
 
 # ---------------------------------------------------------------- footage
-def pexels_search(query, orientation, page=1):
+def pexels_search(query, orientation):
     try:
         r = requests.get("https://api.pexels.com/videos/search", timeout=30,
                          headers={"Authorization": os.environ["PEXELS_API_KEY"]},
-                         params={"query": query, "orientation": orientation, "per_page": 20, "page": page})
-        return r.json().get("videos", []) if r.status_code == 200 else []
+                         params={"query": query, "orientation": orientation, "per_page": 20})
+        vids = r.json().get("videos", []) if r.status_code == 200 else []
+        return [{"id": f"px{v['id']}", "files": [{"link": f["link"], "width": f["width"], "height": f["height"]}
+                 for f in v.get("video_files", []) if f.get("file_type") == "video/mp4" and f.get("width")]}
+                for v in vids]
     except Exception:
         return []
 
 
+def pixabay_search(query, orientation):
+    try:
+        r = requests.get("https://pixabay.com/api/videos/", timeout=30, params={
+            "key": os.environ["PIXABAY_API_KEY"], "q": query[:99], "per_page": 30, "safesearch": "true"})
+        hits = r.json().get("hits", []) if r.status_code == 200 else []
+        out = []
+        for h in hits:
+            files = [{"link": f["url"], "width": f["width"], "height": f["height"]}
+                     for f in h.get("videos", {}).values() if f.get("url") and f.get("width")]
+            if orientation == "portrait":
+                files = [f for f in files if f["width"] >= 1080 or f["height"] >= 1080] or files
+            out.append({"id": f"pb{h['id']}", "portrait": any(f["height"] > f["width"] for f in files), "files": files})
+        if orientation == "portrait":
+            out.sort(key=lambda v: not v["portrait"])
+        return out
+    except Exception:
+        return []
+
+
+def stock_search(query, orientation):
+    if os.environ.get("PIXABAY_API_KEY"):
+        res = pixabay_search(query, orientation)
+        if res or not os.environ.get("PEXELS_API_KEY"):
+            return res
+    return pexels_search(query, orientation)
+
+
 def best_file(video, W, H):
-    files = [f for f in video.get("video_files", []) if f.get("file_type") == "video/mp4" and f.get("width")]
+    files = video.get("files", [])
     if not files:
         return None
     big = [f for f in files if min(f["width"], f["height"]) >= min(W, H) * 0.66]
@@ -254,12 +284,12 @@ def best_file(video, W, H):
 
 
 def get_clips(query, n, orientation, W, H, used_ids, d, tag):
-    vids = [v for v in pexels_search(query, orientation) if v["id"] not in used_ids]
+    vids = [v for v in stock_search(query, orientation) if v["id"] not in used_ids]
     if len(vids) < n:
         q2 = " ".join(query.split()[:1]) if len(query.split()) > 1 else random.choice(CFG["fallback_footage"])
-        vids += [v for v in pexels_search(q2, orientation) if v["id"] not in used_ids and v not in vids]
+        vids += [v for v in stock_search(q2, orientation) if v["id"] not in used_ids and v not in vids]
     if not vids:
-        vids = [v for v in pexels_search(random.choice(CFG["fallback_footage"]), orientation) if v["id"] not in used_ids]
+        vids = [v for v in stock_search(random.choice(CFG["fallback_footage"]), orientation) if v["id"] not in used_ids]
     head = vids[:10]; random.shuffle(head); vids = head + vids[10:]
     paths = []
     for v in vids:
