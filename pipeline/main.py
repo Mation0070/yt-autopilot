@@ -78,7 +78,10 @@ def available_models(key):
                 if "generateContent" in m.get("supportedGenerationMethods", []) and "flash" in name \
                         and not re.search(r"image|tts|live|audio|embed|robotics|preview-\d\d-\d\d", name):
                     _MODELS.append(name)
-            _MODELS.sort(key=lambda n: ("lite" in n, "preview" in n or "exp" in n), reverse=False)
+            def rank(n):
+                v = re.search(r"(\d+(?:\.\d+)?)", n)
+                return ("lite" in n, bool(re.search(r"preview|exp|omni|latest", n)), -float(v.group(1)) if v else 0)
+            _MODELS.sort(key=rank)
             log("models available:", ", ".join(_MODELS[:8]))
         except Exception as e:
             log("model list failed:", e)
@@ -88,16 +91,16 @@ def available_models(key):
 def gemini(prompt, want_json=True, temperature=0.8):
     key = os.environ["GEMINI_API_KEY"]
     models = [os.environ.get("GEMINI_MODEL") or CFG.get("gemini_model", "gemini-3.8-flash"),
-              "gemini-3.8-flash", "gemini-flash-latest", "gemini-flash-lite-latest"] + available_models(key)
+              ] + available_models(key) + ["gemini-flash-latest", "gemini-flash-lite-latest"]
     body = {"contents": [{"parts": [{"text": prompt}]}], "generationConfig": {"temperature": temperature}}
     if want_json:
         body["generationConfig"]["responseMimeType"] = "application/json"
     last = None
     for m in dict.fromkeys(models):
-        for attempt in range(3):
+        for attempt in range(2):
             try:
                 r = requests.post(f"https://generativelanguage.googleapis.com/v1beta/models/{m}:generateContent",
-                                  headers={"x-goog-api-key": key}, json=body, timeout=240)
+                                  headers={"x-goog-api-key": key}, json=body, timeout=150)
             except requests.RequestException as e:
                 last = str(e); log("gemini error", m, last[:200]); time.sleep(15); continue
             if r.status_code == 200:
@@ -112,7 +115,7 @@ def gemini(prompt, want_json=True, temperature=0.8):
             last = f"{m}: HTTP {r.status_code} {r.text[:300]}"
             log("gemini", last)
             if r.status_code in (429, 500, 502, 503, 504):
-                time.sleep(20); continue
+                time.sleep(10); continue
             break
     raise RuntimeError(f"Gemini failed: {last}")
 
