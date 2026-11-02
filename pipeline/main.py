@@ -62,10 +62,33 @@ def sheet_rows():
 
 
 # ---------------------------------------------------------------- AI (Gemini, free tier)
+_MODELS = None
+
+
+def available_models(key):
+    """Ask Google which text models this key can use (models get retired over time)."""
+    global _MODELS
+    if _MODELS is None:
+        _MODELS = []
+        try:
+            r = requests.get("https://generativelanguage.googleapis.com/v1beta/models", timeout=30,
+                             headers={"x-goog-api-key": key}, params={"pageSize": 200})
+            for m in r.json().get("models", []):
+                name = m["name"].split("/")[-1]
+                if "generateContent" in m.get("supportedGenerationMethods", []) and "flash" in name \
+                        and not re.search(r"image|tts|live|audio|embed|robotics|preview-\d\d-\d\d", name):
+                    _MODELS.append(name)
+            _MODELS.sort(key=lambda n: ("lite" in n, "preview" in n or "exp" in n), reverse=False)
+            log("models available:", ", ".join(_MODELS[:8]))
+        except Exception as e:
+            log("model list failed:", e)
+    return _MODELS
+
+
 def gemini(prompt, want_json=True, temperature=0.8):
     key = os.environ["GEMINI_API_KEY"]
-    models = [os.environ.get("GEMINI_MODEL") or CFG.get("gemini_model", "gemini-2.5-flash"),
-              "gemini-flash-latest", "gemini-2.0-flash"]
+    models = [os.environ.get("GEMINI_MODEL") or CFG.get("gemini_model", "gemini-3.8-flash"),
+              "gemini-3.8-flash", "gemini-flash-latest", "gemini-flash-lite-latest"] + available_models(key)
     body = {"contents": [{"parts": [{"text": prompt}]}], "generationConfig": {"temperature": temperature}}
     if want_json:
         body["generationConfig"]["responseMimeType"] = "application/json"
