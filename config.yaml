@@ -1,0 +1,24 @@
+# ---- Channel settings (edit these any time on GitHub) ----
+niche: >
+  Documentary-style explainers about African business, economy and companies:
+  how African founders, companies and industries make money, why markets win or fail,
+  and the forces shaping Nigeria and Africa's economy. Written for a global audience
+  (diaspora, investors, curious viewers), clear, factual and story-driven.
+
+# Microsoft Edge neural voice. Others: en-US-GuyNeural, en-GB-RyanNeural, en-NG-AbeoNeural
+voice: en-US-AndrewNeural
+voice_rate: "+4%"
+
+# "public" once YouTube approves your API audit. Until then YouTube forces "private" anyway.
+privacy: public
+
+gemini_model: gemini-2.5-flash
+
+# Stock-footage searches used when a scene finds nothing
+fallback_footage:
+  - african city skyline
+  - business meeting
+  - money counting
+  - busy market africa
+  - city traffic night
+  - stock market screen
