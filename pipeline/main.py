@@ -71,12 +71,12 @@ def gemini(prompt, want_json=True, temperature=0.8):
         body["generationConfig"]["responseMimeType"] = "application/json"
     last = None
     for m in dict.fromkeys(models):
-        for attempt in range(4):
+        for attempt in range(3):
             try:
                 r = requests.post(f"https://generativelanguage.googleapis.com/v1beta/models/{m}:generateContent",
                                   headers={"x-goog-api-key": key}, json=body, timeout=240)
             except requests.RequestException as e:
-                last = str(e); time.sleep(15); continue
+                last = str(e); log("gemini error", m, last[:200]); time.sleep(15); continue
             if r.status_code == 200:
                 try:
                     txt = "".join(p.get("text", "") for p in r.json()["candidates"][0]["content"]["parts"])
@@ -87,8 +87,9 @@ def gemini(prompt, want_json=True, temperature=0.8):
                 except Exception as e:
                     last = f"bad response from {m}: {e}"; time.sleep(5); continue
             last = f"{m}: HTTP {r.status_code} {r.text[:300]}"
+            log("gemini", last)
             if r.status_code in (429, 500, 502, 503, 504):
-                time.sleep(30 * (attempt + 1)); continue
+                time.sleep(20); continue
             break
     raise RuntimeError(f"Gemini failed: {last}")
 
@@ -448,6 +449,7 @@ def main():
     kind = sys.argv[1] if len(sys.argv) > 1 else "long"
     no_upload = "--no-upload" in sys.argv
     state = load_state()
+    log("starting", kind, "video")
     topic = pick_topic(kind, state)
     script = write_script(kind, topic)
     log("title:", script["title"])
