@@ -1,0 +1,83 @@
+name: Business Docs Autopilot
+
+on:
+  schedule:
+    - cron: "0 15 * * *"       # Short every day at 10am New York / 3pm London
+    - cron: "0 13 * * 1,3,5"   # Long documentary Mon/Wed/Fri at 8-9am New York / 1pm London
+  workflow_dispatch:
+    inputs:
+      kind:
+        description: "long or short"
+        default: short
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: docs-autopilot
+  cancel-in-progress: false
+
+jobs:
+  make-video:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      CONFIG: config_docs.yaml
+      STATE: state_docs.json
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg fonts-dejavu-core
+          pip install -r requirements.txt
+
+      - name: Pick video type
+        id: kind
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "kind=${{ github.event.inputs.kind }}" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.schedule }}" = "0 13 * * 1,3,5" ]; then
+            echo "kind=long" >> "$GITHUB_OUTPUT"
+          else
+            echo "kind=short" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Make and upload video
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN_DOCS }}
+          SHEET_CSV_URL: ${{ secrets.SHEET_CSV_URL_DOCS }}
+        run: python pipeline/main.py ${{ steps.kind.outputs.kind }}
+
+      - name: Save progress
+        if: always()
+        run: |
+          git config user.name "autopilot"
+          git config user.email "autopilot@users.noreply.github.com"
+          git add state_docs.json
+          git diff --cached --quiet || (git commit -m "docs: log ${{ steps.kind.outputs.kind }} video" && git pull --rebase && git push)
+
+      - name: Keep the video file for 7 days
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-${{ steps.kind.outputs.kind }}-video
+          path: |
+            work/*/final.mp4
+            work/*/thumb.jpg
+            work/*/script.json
+          retention-days: 7
+          if-no-files-found: ignore
