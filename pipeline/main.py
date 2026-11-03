@@ -262,12 +262,15 @@ If a detail is not in the sources, leave it out. Recent headlines may be mention
 Write for the ear: short sentences, vivid, conversational, no lists, no markdown, no emojis, no stage directions.
 {CFG.get('style', '')}
 
+Also give exactly 3 'hashtags': specific, searchable topic hashtags (companies, countries, industries,
+e.g. #Dangote #Nigeria #Oil or #NVIDIA #AI #Semiconductors), no spaces, not generic ones like #viral.
+
 For each segment give a 'visual': a 2-4 word generic STOCK FOOTAGE search phrase that fits
 (e.g. 'oil refinery aerial', 'lagos traffic', 'cement factory', 'phone payment app'). Never use people's names or brand names in visuals.
 
 Return JSON:
 {{"title":"...","description":"2 short paragraphs summarising the video for YouTube SEO",
-"tags":["8-15 tags"],"segments":[{{"narration":"...","visual":"..."}}]}}
+"tags":["8-15 tags"],"hashtags":["#Topic","#Topic","#Topic"],"segments":[{{"narration":"...","visual":"..."}}]}}
 
 SOURCES (Wikipedia: {t['wiki_title']}):
 {sources}
@@ -505,8 +508,14 @@ def upload(video, thumb, script, kind):
     creds = Credentials(None, refresh_token=os.environ["YT_REFRESH_TOKEN"], client_id=os.environ["YT_CLIENT_ID"],
                         client_secret=os.environ["YT_CLIENT_SECRET"], token_uri="https://oauth2.googleapis.com/token")
     yt = build("youtube", "v3", credentials=creds, cache_discovery=False)
+    hs = []
+    for h in script.get("hashtags", []):
+        h = "#" + re.sub(r"[^A-Za-z0-9]", "", str(h))
+        if len(h) > 2 and h.lower() not in ("#viral", "#shorts") and h not in hs:
+            hs.append(h)
+    hs = hs[:3] + (["#Shorts"] if kind == "short" else []) + ["#viral"]
     desc = (script.get("description", "") + "\n\nSources: Wikipedia and public news reports."
-            "\nNarration uses an AI voice." + ("\n\n#Shorts #viral" if kind == "short" else "\n\n#viral"))
+            "\nNarration uses an AI voice.\n\n" + " ".join(hs))
     tags = ["viral"] + [t[:30] for t in script.get("tags", []) if t.lower().strip("#") != "viral"][:14]
     body = {"snippet": {"title": script["title"][:100], "description": desc[:4900], "tags": tags,
                         "categoryId": "27", "defaultLanguage": "en", "defaultAudioLanguage": "en"},
