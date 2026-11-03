@@ -1,0 +1,37 @@
+# ---- Business & Technology Documentaries channel ----
+niche: >
+  Premium, cinematic business and technology documentaries for a global English-speaking
+  audience (US, UK, Canada, Australia). We explain the businesses, technologies and economic
+  forces shaping the modern world. Pillars: (1) corporate empires - how companies like Apple,
+  Amazon, NVIDIA, TSMC, ASML, Walmart, LVMH built dominance, make money and keep their moats;
+  (2) technology economics - the money behind AI, semiconductors, software, cloud and data;
+  (3) money and economic power - financial systems, global trade, shipping, capital flows,
+  wealth creation; (4) countries and economies - why nations get rich, development, economic
+  rivalry. Tone: well-researched, intellectually engaging, story-driven, like MagnatesMedia,
+  Modern MBA and Wendover Productions. NOT finance tutorials, tech news or motivational content.
+
+style: >
+  Narrate like a premium documentary: open with a vivid scene or paradox, build tension,
+  reveal the hidden mechanism (how the money actually flows), use concrete numbers from the
+  sources, and end with what it means for the future. Smart but accessible; no hype, no
+  get-rich-quick, no "smash that like button".
+
+voice: en-US-ChristopherNeural
+voice_rate: "+0%"
+privacy: public
+gemini_model: gemini-3.8-flash
+
+long_minutes: 11
+long_words: 1500-1750
+long_segments: 16-22
+source_chars: 20000
+
+news_region: {hl: en-US, gl: US, ceid: "US:en"}
+
+fallback_footage:
+  - city skyline night
+  - semiconductor factory
+  - stock market screen
+  - container ship port
+  - data center servers
+  - corporate office building
