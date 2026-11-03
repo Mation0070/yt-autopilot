@@ -15,6 +15,14 @@ STATE_PATH = ROOT / os.environ.get("STATE", "state.json")
 WORK = ROOT / "work"
 UA = {"User-Agent": "yt-autopilot/1.0 (educational channel bot)"}
 LEARN = ""  # weekly analytics learnings, filled in main()
+STRUCTURES = [
+    "Cold open on a surprising moment, then rewind to how it happened.",
+    "Start with a question the viewer can't answer, then reveal the answer step by step.",
+    "Tell it as a rise-and-fall (or fall-and-rise) story with a clear turning point.",
+    "Myth vs reality: open with what people believe, then show what actually happened.",
+    "Follow the money: trace one dollar/naira through the system from start to finish.",
+    "Countdown of the 3 key decisions or moments that made the outcome inevitable.",
+]
 
 
 def log(*a):
@@ -269,6 +277,10 @@ Angle / creator notes: {t['angle'] or 'your choice'}
 STRICT FACT RULES: Use ONLY facts found in the SOURCES below. Never invent numbers, dates, quotes or events.
 If a detail is not in the sources, leave it out. Recent headlines may be mentioned only as headlines say.
 Write for the ear: short sentences, vivid, conversational, no lists, no markdown, no emojis, no stage directions.
+STRUCTURE FOR THIS VIDEO: {random.choice(STRUCTURES)}
+HUMAN TOUCH (required): include one clearly-framed opinion or analysis line as the channel's own take
+("Here's what most people miss..."), one everyday analogy that makes the idea click, and end with a
+genuine question for viewers to answer in the comments. Vary sentence rhythm; never sound templated.
 {CFG.get('style', '')}
 {LEARN}
 
@@ -305,6 +317,54 @@ HEADLINES: {news or 'none'}""", temperature=0.2)
     if kind == "short" and "#shorts" not in s["title"].lower():
         s["title"] = s["title"][:90] + " #Shorts"
     return s
+
+
+# ---------------------------------------------------------------- YouTube policy check
+def policy_review(kind, s, sources):
+    """AI compliance pass against YouTube Community Guidelines + monetisation policies.
+    Returns a (possibly corrected) script, or None if the video should not be posted."""
+    try:
+        r = gemini(f"""You are a strict YouTube policy reviewer. Check this {kind} video script against YouTube's
+Community Guidelines and advertiser-friendly / monetisation policies. Look for: misleading or clickbait titles
+that the video doesn't deliver; false or unsupported claims (compare with SOURCES); defamation or accusing real
+people of crimes not established in the sources; hate, harassment, violence, graphic content; dangerous or
+harmful advice; personalised financial/investment advice or get-rich-quick claims; medical claims; profanity;
+content unsuitable for advertisers; spammy or irrelevant tags/hashtags; anything copied verbatim at length.
+Fix every problem you can by rewriting the affected title/description/narration while keeping the same JSON
+structure and keys. Set "ok" false ONLY if the topic itself cannot be made acceptable.
+Return JSON: {{"ok": true/false, "issues": ["..."], "script": <the corrected script JSON>}}
+SCRIPT: {json.dumps(s, ensure_ascii=False)}
+SOURCES: {sources[:8000]}""", temperature=0.2)
+    except Exception as e:
+        log("policy review unavailable, using script as written:", str(e)[:150])
+        return s
+    for i in r.get("issues", [])[:8]:
+        log("policy fix:", str(i)[:160])
+    if not r.get("ok", True):
+        log("policy review REJECTED this topic")
+        return None
+    fixed = r.get("script")
+    if isinstance(fixed, dict) and fixed.get("segments") and fixed.get("title"):
+        fixed["segments"] = [g for g in fixed["segments"] if str(g.get("narration", "")).strip()]
+        return fixed
+    return s
+
+
+def clean_meta(script, kind):
+    """Make metadata satisfy YouTube's technical limits (no < >, title <=100, tags <=450 chars)."""
+    strip = lambda x: re.sub(r"[<>]", "", str(x)).strip()
+    title = strip(script.get("title", "Untitled"))[:100]
+    if title.isupper():
+        title = title.title()
+    script["title"] = title
+    script["description"] = strip(script.get("description", ""))
+    tags, total = [], 0
+    for t in script.get("tags", []):
+        t = strip(t).replace(",", "")[:30]
+        if t and total + len(t) + 1 <= 450:
+            tags.append(t); total += len(t) + 1
+    script["tags"] = tags
+    return script
 
 
 # ---------------------------------------------------------------- voice
@@ -565,13 +625,25 @@ def main():
                    long_segments=f"{max(8, round(m * 1.3))}-{round(m * 1.8)}")
         log("auto-tuned long video length:", m, "min")
     log("starting", kind, "video")
-    topic = pick_topic(kind, state)
-    script = write_script(kind, topic)
+    for _ in range(3):
+        topic = pick_topic(kind, state)
+        script = write_script(kind, topic)
+        script = policy_review(kind, script, topic.get("source") or "")
+        if script:
+            break
+        state["used"].append(topic["key"]); save_state(state)  # never retry a rejected topic
+    else:
+        raise RuntimeError("no policy-safe topic found this run")
+    script = clean_meta(script, kind)
     log("title:", script["title"])
     d = WORK / kind
     shutil.rmtree(d, ignore_errors=True); d.mkdir(parents=True)
     (d / "script.json").write_text(json.dumps(script, indent=1, ensure_ascii=False))
     video = render(kind, script, d)
+    secs = duration(video)
+    has_audio = "audio" in run(["ffprobe", "-v", "error", "-show_entries", "stream=codec_type", "-of", "csv=p=0", str(video)])
+    if not has_audio or secs < 15 or (kind == "short" and secs > 175) or (kind == "long" and secs < 60):
+        raise RuntimeError(f"video failed quality check (length {secs:.0f}s, audio={has_audio})")
     thumb = thumbnail(d / "video.mp4", script["title"], d) if kind == "long" else None
     vid = None if no_upload else upload(video, thumb, script, kind)
     state["used"].append(topic["key"])
