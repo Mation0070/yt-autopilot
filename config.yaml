@@ -23,3 +23,6 @@ fallback_footage:
   - busy market africa
   - city traffic night
   - stock market screen
+
+# Never repeat topics already covered by the other channel
+avoid_from: [state_docs.json]
