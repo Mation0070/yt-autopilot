@@ -10,8 +10,8 @@ import xml.etree.ElementTree as ET
 import requests, yaml
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-CFG = yaml.safe_load(open(ROOT / "config.yaml", encoding="utf-8"))
-STATE_PATH = ROOT / "state.json"
+CFG = yaml.safe_load(open(ROOT / os.environ.get("CONFIG", "config.yaml"), encoding="utf-8"))
+STATE_PATH = ROOT / os.environ.get("STATE", "state.json")
 WORK = ROOT / "work"
 UA = {"User-Agent": "yt-autopilot/1.0 (educational channel bot)"}
 
@@ -194,7 +194,7 @@ def wiki_article(title):
 def news_headlines(q, n=8):
     try:
         r = requests.get("https://news.google.com/rss/search", headers=UA, timeout=30,
-                         params={"q": q, "hl": "en-NG", "gl": "NG", "ceid": "NG:en"})
+                         params={"q": q, **CFG.get("news_region", {"hl": "en-NG", "gl": "NG", "ceid": "NG:en"})})
         items = ET.fromstring(r.content).findall(".//item")[:n]
         return [f"- {i.findtext('title')} ({(i.findtext('pubDate') or '')[:16]})" for i in items]
     except Exception:
@@ -217,7 +217,7 @@ def pick_topic(kind, state):
         return {"topic": t, "angle": notes, "wiki_title": title, "source": text, "key": t}
 
     fmt = "60-second YouTube Short with one surprising fact or story" if kind == "short" \
-        else "7-minute documentary-style YouTube video"
+        else f"{CFG.get('long_minutes', 7)}-minute documentary-style YouTube video"
     avoid = "; ".join(state["used"][-200:]) or "none yet"
     for _ in range(3):
         data = gemini(f"""You plan videos for a YouTube channel. Niche: {CFG['niche']}
@@ -241,15 +241,15 @@ Return JSON: {{"topics":[{{"topic":"short working title","wikipedia_title":"exac
 
 # ---------------------------------------------------------------- script
 def write_script(kind, t):
-    sources = (t["source"] or "")[:14000]
+    sources = (t["source"] or "")[:CFG.get("source_chars", 14000)]
     news = "\n".join(news_headlines(t["wiki_title"] or t["topic"]))
     if kind == "short":
         spec = """A YouTube Short of 120-150 words total (about 50 seconds spoken).
 5-7 segments. Segment 1 is a scroll-stopping hook in under 12 words. End with a line that makes people
 want to rewatch or follow. Title must be under 60 characters and end with ' #Shorts'."""
     else:
-        spec = """A documentary-style YouTube video of 950-1150 words (about 7 minutes spoken).
-11-15 segments. The first segment is a strong 2-3 sentence hook that creates curiosity (no 'welcome back',
+        spec = f"""A documentary-style YouTube video of {CFG.get('long_words', '950-1150')} words (about {CFG.get('long_minutes', 7)} minutes spoken).
+{CFG.get('long_segments', '11-15')} segments. The first segment is a strong 2-3 sentence hook that creates curiosity (no 'welcome back',
 no 'in this video'). Tell it as a story with tension: origins, turning points, numbers, what it means.
 Close with a takeaway and a one-line call to subscribe. Title: under 70 characters, curiosity-driven, not clickbait lies."""
     prompt = f"""You are a top YouTube scriptwriter for this channel: {CFG['niche']}
@@ -260,6 +260,7 @@ Angle / creator notes: {t['angle'] or 'your choice'}
 STRICT FACT RULES: Use ONLY facts found in the SOURCES below. Never invent numbers, dates, quotes or events.
 If a detail is not in the sources, leave it out. Recent headlines may be mentioned only as headlines say.
 Write for the ear: short sentences, vivid, conversational, no lists, no markdown, no emojis, no stage directions.
+{CFG.get('style', '')}
 
 For each segment give a 'visual': a 2-4 word generic STOCK FOOTAGE search phrase that fits
 (e.g. 'oil refinery aerial', 'lagos traffic', 'cement factory', 'phone payment app'). Never use people's names or brand names in visuals.
