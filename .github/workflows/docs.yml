@@ -21,7 +21,7 @@ concurrency:
 jobs:
   make-video:
     runs-on: ubuntu-latest
-    timeout-minutes: 75
+    timeout-minutes: 150
     env:
       CONFIG: config_docs.yaml
       STATE: state_docs.json
@@ -60,7 +60,12 @@ jobs:
           YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
           YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN_DOCS }}
           SHEET_CSV_URL: ${{ secrets.SHEET_CSV_URL_DOCS }}
-        run: python pipeline/main.py ${{ steps.kind.outputs.kind }}
+        run: |
+          for attempt in 1 2 3; do
+            python pipeline/main.py ${{ steps.kind.outputs.kind }} && exit 0
+            [ $attempt -lt 3 ] && echo "Attempt $attempt failed - retrying in 8 minutes" && sleep 480
+          done
+          exit 1
 
       - name: Save progress
         if: always()
