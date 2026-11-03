@@ -4,7 +4,7 @@ on:
   schedule:
     - cron: "0 15 * * *"       # Short every day at 10am New York / 3pm London
     - cron: "0 22 * * *"       # 2nd Short every day at 5pm New York / 10pm London
-    - cron: "0 13 * * 1,3,5"   # Long documentary Mon/Wed/Fri at 8-9am New York / 1pm London
+    - cron: "0 13 */2 * *"     # Long documentary on odd dates at 2pm Lagos / 8am New York / 1pm London
   workflow_dispatch:
     inputs:
       kind:
@@ -45,7 +45,7 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "kind=${{ github.event.inputs.kind }}" >> "$GITHUB_OUTPUT"
-          elif [ "${{ github.event.schedule }}" = "0 13 * * 1,3,5" ]; then
+          elif [ "${{ github.event.schedule }}" = "0 13 */2 * *" ]; then
             echo "kind=long" >> "$GITHUB_OUTPUT"
           else
             echo "kind=short" >> "$GITHUB_OUTPUT"
