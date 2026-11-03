@@ -506,8 +506,8 @@ def upload(video, thumb, script, kind):
                         client_secret=os.environ["YT_CLIENT_SECRET"], token_uri="https://oauth2.googleapis.com/token")
     yt = build("youtube", "v3", credentials=creds, cache_discovery=False)
     desc = (script.get("description", "") + "\n\nSources: Wikipedia and public news reports."
-            "\nNarration uses an AI voice." + ("\n\n#Shorts" if kind == "short" else ""))
-    tags = [t[:30] for t in script.get("tags", [])][:15]
+            "\nNarration uses an AI voice." + ("\n\n#Shorts #viral" if kind == "short" else "\n\n#viral"))
+    tags = ["viral"] + [t[:30] for t in script.get("tags", []) if t.lower().strip("#") != "viral"][:14]
     body = {"snippet": {"title": script["title"][:100], "description": desc[:4900], "tags": tags,
                         "categoryId": "27", "defaultLanguage": "en", "defaultAudioLanguage": "en"},
             "status": {"privacyStatus": CFG.get("privacy", "public"), "selfDeclaredMadeForKids": False,
