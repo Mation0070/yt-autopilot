@@ -624,6 +624,12 @@ def main():
         CFG.update(long_minutes=m, long_words=f"{m * 140}-{m * 160}",
                    long_segments=f"{max(8, round(m * 1.3))}-{round(m * 1.8)}")
         log("auto-tuned long video length:", m, "min")
+    if kind == "short" and os.environ.get("GITHUB_EVENT_NAME") == "schedule":
+        today = time.strftime("%Y-%m-%d")
+        done = sum(1 for u in state.get("uploads", []) if u.get("kind") == "short" and str(u.get("date", "")).startswith(today))
+        if done >= CFG.get("max_shorts_per_day", 2):
+            log(f"already posted {done} Shorts today -> skipping this slot")
+            return
     log("starting", kind, "video")
     for _ in range(3):
         topic = pick_topic(kind, state)
