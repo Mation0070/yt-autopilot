@@ -86,6 +86,19 @@ Return JSON: {{"summary":"3-5 sentence plain-English summary for the owner",
         log("analysis failed:", e)
         ai = {"summary": "AI analysis unavailable this week.", "learnings": [], "double_down": [], "avoid": []}
 
+    # self-tuning: adjust long-video length from retention (bounded, one step per week)
+    tune_note = ""
+    from main import CFG
+    longs = [v for v in vids if v["kind"] == "long" and v.get("avg_view_pct") is not None and v["views"] >= 20]
+    if len(longs) >= 3:
+        pct = sum(v["avg_view_pct"] for v in longs) / len(longs)
+        cur = int((state.get("tuning") or {}).get("long_minutes") or CFG.get("long_minutes", 7))
+        lo, hi = CFG.get("tune_min_minutes", 5), CFG.get("tune_max_minutes", 15)
+        new = cur - 1 if pct < 30 else cur + 1 if pct > 50 else cur
+        new = max(lo, min(hi, new))
+        state["tuning"] = {**(state.get("tuning") or {}), "long_minutes": new}
+        tune_note = (f"Long videos were watched {pct:.0f}% on average -> length "
+                     f"{'kept at' if new == cur else 'changed to'} {new} min.")
     state["insights"] = {"date": str(dt.date.today()), "learnings": ai.get("learnings", [])[:8],
                          "double_down": ai.get("double_down", [])[:8], "avoid": ai.get("avoid", [])[:8]}
     save_state(state)
@@ -101,6 +114,8 @@ Return JSON: {{"summary":"3-5 sentence plain-English summary for the owner",
     for head, key in (("What the AI will do more of", "double_down"), ("What it will avoid", "avoid"),
                       ("New rules for scripts & titles", "learnings")):
         L += ["", f"## {head}"] + [f"- {x}" for x in ai.get(key, [])]
+    if tune_note:
+        L += ["", "## Auto-tuning", tune_note]
     if not analytics_ok:
         L += ["", "_Watch-time data missing: the channel needs the analytics permission re-authorised._"]
     L += ["", "_Click-through rate (CTR) isn't available through YouTube's API - check it in the YouTube Studio app "
