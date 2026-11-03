@@ -3,6 +3,7 @@ name: Business Docs Autopilot
 on:
   schedule:
     - cron: "0 15 * * *"       # Short every day at 10am New York / 3pm London
+    - cron: "0 22 * * *"       # 2nd Short every day at 5pm New York / 10pm London
     - cron: "0 13 * * 1,3,5"   # Long documentary Mon/Wed/Fri at 8-9am New York / 1pm London
   workflow_dispatch:
     inputs:
