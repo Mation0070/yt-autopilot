@@ -2,6 +2,7 @@ name: YouTube Autopilot
 
 on:
   schedule:
+    - cron: "0 11 * * *"     # Short every day at 12pm Lagos time
     - cron: "0 17 * * *"     # Short every day at 6pm Lagos time
     - cron: "0 14 */2 * *"   # Long video every 2 days at 3pm Lagos time
   workflow_dispatch:
