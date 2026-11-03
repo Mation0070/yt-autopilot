@@ -124,7 +124,53 @@ def gemini(prompt, want_json=True, temperature=0.8):
             if r.status_code in (429, 500, 502, 503, 504):
                 time.sleep(10); continue
             break
-    raise RuntimeError(f"Gemini failed: {last}")
+    if os.environ.get("GROQ_API_KEY"):
+        log("Gemini busy -> switching to Groq backup")
+        try:
+            return groq(prompt, want_json, temperature)
+        except Exception as e:
+            last = f"{last} | Groq: {e}"
+    raise RuntimeError(f"AI failed: {last}")
+
+
+def groq(prompt, want_json=True, temperature=0.8):
+    key = os.environ["GROQ_API_KEY"]
+    h = {"Authorization": f"Bearer {key}"}
+    prefer = ["openai/gpt-oss-120b", "llama-3.3-70b-versatile", "moonshotai/kimi-k2-instruct",
+              "openai/gpt-oss-20b", "llama-3.1-8b-instant"]
+    try:
+        have = [m["id"] for m in requests.get("https://api.groq.com/openai/v1/models", headers=h,
+                                              timeout=30).json().get("data", [])]
+        models = [m for m in prefer if m in have] + [m for m in have if m not in prefer and
+                                                      not re.search(r"whisper|tts|guard|vision|orpheus", m)]
+    except Exception:
+        models = prefer
+    last = None
+    for m in models[:5]:
+        body = {"model": m, "temperature": temperature,
+                "messages": [{"role": "user", "content": prompt[:24000]}]}
+        if want_json:
+            body["response_format"] = {"type": "json_object"}
+            body["messages"][0]["content"] += "\n\nRespond with valid JSON only."
+        for attempt in range(2):
+            try:
+                r = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=h, json=body, timeout=120)
+            except requests.RequestException as e:
+                last = str(e); time.sleep(10); continue
+            if r.status_code == 200:
+                txt = r.json()["choices"][0]["message"]["content"]
+                if not want_json:
+                    return txt
+                try:
+                    return json.loads(re.sub(r"^```(?:json)?|```$", "", txt.strip()).strip())
+                except Exception as e:
+                    last = f"bad json from {m}: {e}"; continue
+            last = f"{m}: HTTP {r.status_code} {r.text[:200]}"
+            log("groq", last)
+            if r.status_code == 429:
+                time.sleep(30); continue
+            break
+    raise RuntimeError(last)
 
 
 # ---------------------------------------------------------------- research
