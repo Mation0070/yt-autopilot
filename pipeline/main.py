@@ -204,6 +204,13 @@ def news_headlines(q, n=8):
 
 def pick_topic(kind, state):
     used = {norm(u) for u in state["used"]}
+    # never repeat a topic the other channel already covered
+    for other in CFG.get("avoid_from", []):
+        try:
+            state = {**state, "used": state["used"] + json.loads((ROOT / other).read_text()).get("used", [])}
+        except Exception:
+            pass
+    used = {norm(u) for u in state["used"]}
     rows = sheet_rows()
     if rows and rows[0][0].strip().upper() == "STOP":
         log("STOP found in sheet cell A1 -> skipping this run.")
