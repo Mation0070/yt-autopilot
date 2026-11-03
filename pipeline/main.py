@@ -14,6 +14,7 @@ CFG = yaml.safe_load(open(ROOT / os.environ.get("CONFIG", "config.yaml"), encodi
 STATE_PATH = ROOT / os.environ.get("STATE", "state.json")
 WORK = ROOT / "work"
 UA = {"User-Agent": "yt-autopilot/1.0 (educational channel bot)"}
+LEARN = ""  # weekly analytics learnings, filled in main()
 
 
 def log(*a):
@@ -225,6 +226,7 @@ Propose 10 fresh topics for a {fmt}. Each must be about a real subject that has 
 English Wikipedia article (company, person's business empire, industry, economic event, policy, market).
 Mix famous topics with surprising lesser-known ones. Prefer topics people actually search for.
 Do NOT repeat or closely overlap these already-made topics: {avoid}
+{LEARN}
 Return JSON: {{"topics":[{{"topic":"short working title","wikipedia_title":"exact article title","angle":"the hook/story angle"}}]}}""")
         cands = data.get("topics", [])
         random.shuffle(cands)
@@ -261,6 +263,7 @@ STRICT FACT RULES: Use ONLY facts found in the SOURCES below. Never invent numbe
 If a detail is not in the sources, leave it out. Recent headlines may be mentioned only as headlines say.
 Write for the ear: short sentences, vivid, conversational, no lists, no markdown, no emojis, no stage directions.
 {CFG.get('style', '')}
+{LEARN}
 
 Also give exactly 3 'hashtags': specific, searchable topic hashtags (companies, countries, industries,
 e.g. #Dangote #Nigeria #Oil or #NVIDIA #AI #Semiconductors), no spaces, not generic ones like #viral.
@@ -541,6 +544,13 @@ def main():
     kind = sys.argv[1] if len(sys.argv) > 1 else "long"
     no_upload = "--no-upload" in sys.argv
     state = load_state()
+    global LEARN
+    ins = state.get("insights") or {}
+    if ins.get("learnings") or ins.get("double_down"):
+        LEARN = ("WHAT'S WORKING ON THIS CHANNEL (from last week's analytics - follow it):\n- "
+                 + "\n- ".join(ins.get("learnings", []))
+                 + ("\nMore like: " + "; ".join(ins.get("double_down", [])) if ins.get("double_down") else "")
+                 + ("\nAvoid: " + "; ".join(ins.get("avoid", [])) if ins.get("avoid") else ""))
     log("starting", kind, "video")
     topic = pick_topic(kind, state)
     script = write_script(kind, topic)
