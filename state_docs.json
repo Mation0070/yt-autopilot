@@ -13,24 +13,24 @@
  "insights": {
   "date": "2026-11-03",
   "learnings": [
-   "Hook viewers within the first 1.5 seconds with a high-stakes question or startling stat.",
-   "Include concrete numbers and high-impact terms in titles (e.g., '$5 Trillion', 'War Deterrent').",
-   "Keep Short scripts under 45 seconds to maximize completion rate and potential replay loops.",
-   "Frame geopolitical topics around clear conflicts, hidden economic costs, or global disruption.",
-   "Script seamless end-to-beginning loops for Shorts to boost watch time percentage.",
-   "Test long-form deep-dives (8-12 minutes) alongside Shorts to build strong subscriber affinity."
+   "Hook the viewer within the first 3 seconds using high-stakes numbers or compelling geopolitical maps.",
+   "Include high-impact financial or strategic figures in the title (e.g., '$5 Trillion', 'Monopoly Tech').",
+   "Keep Short titles punchy and place hashtags like #Shorts in the description or tags rather than cluttering the main title.",
+   "Maintain high visual density with fast-paced B-roll, maps, and dynamic text overlays for maximum retention.",
+   "Combine tech, economics, and military strategy to broaden the documentary appeal beyond standard news.",
+   "Add a compelling end-screen CTA or verbal cue to convert passive viewers into subscribers."
   ],
   "double_down": [
-   "The Secret Undersea Cables Carrying 99% of Global Data",
-   "Why the U.S. Cobalt Monopoly Failed Overnight",
-   "How $500 Drones Made $10M Tanks Obsolete",
-   "The Chokepoint Controlling the World's Food Supply"
+   "ASML's extreme ultraviolet (EUV) monopoly and global tech dependence",
+   "The hidden vulnerability of global undersea internet cables",
+   "TSMC's multi-billion dollar expansion into Arizona and Europe",
+   "China's chokehold on rare earth metal supply chains"
   ],
   "avoid": [
-   "Drawing definitive strategy conclusions from a single video with 2 views.",
-   "Slow, traditional documentary introductions that delay the main thesis.",
-   "Generic historical recaps without a modern high-stakes angle.",
-   "Overly dense technical jargon that distracts from the core narrative arc."
+   "Relying on static text-heavy slides without dynamic movement or voiceover",
+   "Generic academic titles lacking curiosity or high-stakes framing",
+   "Publishing sporadically without testing different thumbnail and hook variations",
+   "Assuming organic reach will trigger without optimizing description tags and keywords"
   ]
  }
 }
