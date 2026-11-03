@@ -558,6 +558,12 @@ def main():
                  + "\n- ".join(ins.get("learnings", []))
                  + ("\nMore like: " + "; ".join(ins.get("double_down", [])) if ins.get("double_down") else "")
                  + ("\nAvoid: " + "; ".join(ins.get("avoid", [])) if ins.get("avoid") else ""))
+    tune = state.get("tuning") or {}
+    if tune.get("long_minutes"):
+        m = int(tune["long_minutes"])
+        CFG.update(long_minutes=m, long_words=f"{m * 140}-{m * 160}",
+                   long_segments=f"{max(8, round(m * 1.3))}-{round(m * 1.8)}")
+        log("auto-tuned long video length:", m, "min")
     log("starting", kind, "video")
     topic = pick_topic(kind, state)
     script = write_script(kind, topic)
