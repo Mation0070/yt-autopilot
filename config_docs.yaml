@@ -35,3 +35,6 @@ fallback_footage:
   - container ship port
   - data center servers
   - corporate office building
+
+# Never repeat topics already covered by the other channel
+avoid_from: [state.json]
