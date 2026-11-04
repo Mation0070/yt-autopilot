@@ -183,14 +183,29 @@ def groq(prompt, want_json=True, temperature=0.8):
 
 
 # ---------------------------------------------------------------- research
+def wiki_get(params):
+    """Wikipedia API call that survives rate limits / bad responses (retries, then gives up quietly)."""
+    for attempt in range(4):
+        try:
+            r = requests.get("https://en.wikipedia.org/w/api.php", headers=UA, timeout=30,
+                             params={**params, "format": "json"})
+            if r.status_code == 200:
+                return r.json()
+        except Exception:
+            pass
+        time.sleep(4 * (attempt + 1))
+    log("wikipedia unavailable for", params.get("titles") or params.get("srsearch"))
+    return {}
+
+
 def wiki_article(title):
-    r = requests.get("https://en.wikipedia.org/w/api.php", headers=UA, timeout=30, params={
-        "action": "query", "prop": "extracts", "explaintext": 1, "redirects": 1,
-        "titles": title, "format": "json"})
-    page = next(iter(r.json()["query"]["pages"].values()))
+    j = wiki_get({"action": "query", "prop": "extracts", "explaintext": 1, "redirects": 1, "titles": title})
+    pages = j.get("query", {}).get("pages", {})
+    if not pages:
+        return None, ""
+    page = next(iter(pages.values()))
     if "missing" in page:
-        s = requests.get("https://en.wikipedia.org/w/api.php", headers=UA, timeout=30, params={
-            "action": "query", "list": "search", "srsearch": title, "format": "json", "srlimit": 1}).json()
+        s = wiki_get({"action": "query", "list": "search", "srsearch": title, "srlimit": 1})
         hits = s.get("query", {}).get("search", [])
         if not hits:
             return None, ""
