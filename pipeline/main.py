@@ -293,7 +293,7 @@ For each segment give a 'visual': a 2-4 word generic STOCK FOOTAGE search phrase
 
 Return JSON:
 {{"title":"...","description":"2 short paragraphs summarising the video for YouTube SEO",
-"tags":["8-15 tags"],"hashtags":["#Topic","#Topic","#Topic"],"segments":[{{"narration":"...","visual":"..."}}]}}
+"tags":["8-15 tags"],"hashtags":["#Topic","#Topic","#Topic"],"hook_text":"2-5 word punchy ON-SCREEN hook for the first 2 seconds, ALL CAPS, must be true","segments":[{{"narration":"...","visual":"..."}}]}}
 
 SOURCES (Wikipedia: {t['wiki_title']}):
 {sources}
@@ -476,7 +476,7 @@ def ts(t):
     return f"{int(h)}:{int(m):02d}:{s:05.2f}"
 
 
-def make_ass(segs, audio, W, H, short, path):
+def make_ass(segs, audio, W, H, short, path, hook=""):
     size, margin, align = (96, int(H * 0.30), 2) if short else (54, 70, 2)
     words_per = 3 if short else 7
     lines = [
@@ -486,7 +486,12 @@ def make_ass(segs, audio, W, H, short, path):
         "Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding",
         f"Style: Default,DejaVu Sans,{size},&H00FFFFFF,&H00FFFFFF,&H00000000,&H64000000,-1,0,0,0,100,100,0,0,1,"
         f"{5 if short else 3},1,{align},60,60,{margin},1", "",
+        f"Style: Hook,DejaVu Sans,{118 if short else 90},&H0000E5FF,&H0000E5FF,&H00000000,&H96000000,-1,0,0,0,100,100,0,0,1,"
+        f"8,2,8,70,70,{int(H * 0.13)},1", "",
         "[Events]", "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"]
+    hook = re.sub(r"[{}\\]", "", str(hook or "")).strip().upper()
+    if hook:
+        lines.append(f"Dialogue: 1,{ts(0)},{ts(2.3)},Hook,,0,0,0,,{{\\fad(0,250)\\fscx60\\fscy60\\t(0,180,\\fscx100\\fscy100)}}{hook}")
     t0 = 0.0
     for g, (_, dur) in zip(segs, audio):
         words = g["narration"].split()
@@ -496,10 +501,18 @@ def make_ass(segs, audio, W, H, short, path):
         t = t0
         for c in chunks:
             dt = speak * (len(c) + 3) / total
-            txt = c.upper() if short else c
             if short:
-                txt = r"{\fad(40,0)}" + txt
-            lines.append(f"Dialogue: 0,{ts(t)},{ts(t + dt)},Default,,0,0,0,,{txt}")
+                # word-by-word highlight: current word yellow, others white
+                ws = c.upper().split()
+                wt = sum(len(w) + 2 for w in ws) or 1
+                tw = t
+                for k, w in enumerate(ws):
+                    wd = dt * (len(w) + 2) / wt
+                    txt = " ".join(("{\\c&H00E5FF&}" + x + "{\\c&HFFFFFF&}") if m == k else x for m, x in enumerate(ws))
+                    lines.append(f"Dialogue: 0,{ts(tw)},{ts(tw + wd)},Default,,0,0,0,,{txt}")
+                    tw += wd
+            else:
+                lines.append(f"Dialogue: 0,{ts(t)},{ts(t + dt)},Default,,0,0,0,,{c}")
             t += dt
         t0 += dur
     path.write_text("\n".join(lines), encoding="utf-8")
@@ -514,15 +527,19 @@ def render(kind, script, d):
     log(f"voicing {len(segs)} segments")
     audio = voice_segments(segs, d)
     used_ids, parts = set(), []
-    vf = (f"scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},fps=30,setsar=1")
     for i, (g, (_, dur)) in enumerate(zip(segs, audio)):
-        n = max(1, math.ceil(dur / (4.0 if short else 6.0)))
+        n = max(1, math.ceil(dur / (2.3 if short else 5.0)))
         clips = get_clips(g.get("visual") or "city", n, orient, W, H, used_ids, d, i)
         if not clips:
             raise RuntimeError("no footage found")
         pd = dur / n
         for j, c in enumerate(clips):
             out = d / f"p{i:02d}_{j}.mp4"
+            # slow Ken Burns zoom, alternating in / out
+            z = "min(1+0.0011*on,1.15)" if (i + j) % 2 == 0 else "max(1.15-0.0011*on,1)"
+            vf = (f"scale={int(W * 1.2)}:{int(H * 1.2)}:force_original_aspect_ratio=increase,"
+                  f"crop={int(W * 1.2)}:{int(H * 1.2)},fps=30,"
+                  f"zoompan=z='{z}':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=1:s={W}x{H}:fps=30,setsar=1")
             run(["ffmpeg", "-y", "-stream_loop", "-1", "-i", c, "-t", f"{pd:.3f}", "-vf", vf, "-an",
                  "-c:v", "libx264", "-preset", "veryfast", "-crf", "22", "-pix_fmt", "yuv420p", "-r", "30", out])
             parts.append(out)
@@ -530,8 +547,9 @@ def render(kind, script, d):
     (d / "v.txt").write_text("".join(f"file '{p.name}'\n" for p in parts))
     (d / "a.txt").write_text("".join(f"file '{w.name}'\n" for w, _ in audio))
     run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", d / "v.txt", "-c", "copy", d / "video.mp4"])
-    run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", d / "a.txt", "-c", "copy", d / "audio.wav"])
-    make_ass(segs, audio, W, H, short, d / "subs.ass")
+    run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", d / "a.txt", "-c", "copy", d / "narration.wav"])
+    add_music(d, sum(x for _, x in audio), 0.11 if short else 0.07)
+    make_ass(segs, audio, W, H, short, d / "subs.ass", script.get("hook_text", "") if short else "")
     final = d / "final.mp4"
     if short:
         # animated like + subscribe button in the last seconds, with a "tap" and a click sound
@@ -557,6 +575,25 @@ def render(kind, script, d):
              "-c:a", "aac", "-b:a", "160k", "-shortest", "-movflags", "+faststart", str(final)])
     log(f"rendered {final} ({duration(final):.1f}s)")
     return final
+
+
+def add_music(d, T, vol):
+    """Soft, original background pad (generated, so no copyright issues) mixed under the narration."""
+    progs = [[(220, 261.63, 329.63), (174.61, 220, 261.63), (130.81, 164.81, 196), (196, 246.94, 293.66)],
+             [(146.83, 174.61, 220), (116.54, 146.83, 174.61), (174.61, 220, 261.63), (130.81, 164.81, 196)]]
+    chords = random.choice(progs)
+    ins, parts = [], []
+    for k, (f1, f2, f3) in enumerate(chords):
+        expr = (f"(0.22*sin(2*PI*{f1}*t)+0.18*sin(2*PI*{f2}*t)+0.16*sin(2*PI*{f3}*t)+0.14*sin(2*PI*{f1 / 2}*t))"
+                f"*(0.85+0.15*sin(2*PI*0.25*t))")
+        ins += ["-f", "lavfi", "-i", f"aevalsrc='{expr}':s=44100:d=4"]
+        parts.append(f"[{k}:a]afade=t=in:d=1.2,afade=t=out:st=2.6:d=1.4[c{k}]")
+    fc = ";".join(parts) + ";" + "".join(f"[c{k}]" for k in range(4)) + "concat=n=4:v=0:a=1,aformat=channel_layouts=stereo[m]"
+    run(["ffmpeg", "-y", *ins, "-filter_complex", fc, "-map", "[m]", str(d / "pad.wav")])
+    run(["ffmpeg", "-y", "-i", str(d / "narration.wav"), "-stream_loop", "-1", "-i", str(d / "pad.wav"),
+         "-filter_complex", f"[1:a]lowpass=f=1400,aecho=0.8:0.6:90|160:0.25|0.15,volume={vol}[bg];"
+                            f"[0:a][bg]amix=inputs=2:duration=first:normalize=0[a]",
+         "-map", "[a]", "-t", f"{T:.2f}", "-ar", "44100", "-ac", "2", str(d / "audio.wav")])
 
 
 def cta_pngs(d, W):
