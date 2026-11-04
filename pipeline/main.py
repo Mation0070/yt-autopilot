@@ -244,16 +244,72 @@ Do NOT repeat or closely overlap these already-made topics: {avoid}
 {LEARN}
 Return JSON: {{"topics":[{{"topic":"short working title","wikipedia_title":"exact article title","angle":"the hook/story angle"}}]}}""")
         cands = data.get("topics", [])
-        random.shuffle(cands)
-        for c in cands:
+        past = [norm(u) for u in state["used"]] + [norm(u.get("title", "")) for u in state.get("uploads", [])]
+        scored = []
+        for c in cands[:10]:
             if norm(c.get("topic", "")) in used or norm(c.get("wikipedia_title", "")) in used:
                 continue
+            if too_similar(c.get("topic", ""), past) or too_similar(c.get("wikipedia_title", ""), past):
+                continue
             title, text = wiki_article(c.get("wikipedia_title") or c["topic"])
-            if title and norm(title) not in used and len(text) > 2500:
-                log("auto topic:", c["topic"], "| wiki:", title)
-                return {"topic": c["topic"], "angle": c.get("angle", ""), "wiki_title": title,
-                        "source": text, "key": title}
+            if not title or norm(title) in used or too_similar(title, past) or len(text) < 2500:
+                continue
+            score, why = demand_score(title, c["topic"])
+            log(f"research: {c['topic'][:50]} | score {score:.1f} ({why})")
+            scored.append((score, c, title, text))
+        if scored:
+            scored.sort(key=lambda x: x[0], reverse=True)
+            score, c, title, text = scored[0]
+            log(f"auto topic (best demand {score:.1f}):", c["topic"], "| wiki:", title)
+            return {"topic": c["topic"], "angle": c.get("angle", ""), "wiki_title": title,
+                    "source": text, "key": title}
     raise RuntimeError("could not find a fresh topic")
+
+
+def too_similar(text, past, limit=0.6):
+    """True if a topic shares most of its key words with something already made."""
+    stop = {"the", "of", "and", "a", "an", "in", "how", "why", "to", "for", "on", "s", "its", "is", "what", "who", "shorts", "s"}
+    w = {x for x in norm(text).split() if x not in stop}
+    if not w:
+        return False
+    for p in past:
+        q = {x for x in p.split() if x not in stop}
+        if q and len(w & q) / min(len(w), len(q)) >= limit:
+            return True
+    return False
+
+
+def demand_score(wiki_title, topic):
+    """Research how much interest a topic has, using free public signals:
+    Wikipedia readers (last 60 days), recent news coverage, and YouTube search suggestions."""
+    import datetime as _dt
+    import math as _m
+    import urllib.parse as _u
+    views = news = sugg = 0
+    try:
+        end = _dt.date.today() - _dt.timedelta(days=1)
+        start = end - _dt.timedelta(days=60)
+        r = requests.get("https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/"
+                         f"{_u.quote(wiki_title.replace(' ', '_'), safe='')}/daily/{start:%Y%m%d}/{end:%Y%m%d}",
+                         headers=UA, timeout=20)
+        views = sum(i.get("views", 0) for i in r.json().get("items", []))
+    except Exception:
+        pass
+    try:
+        r = requests.get("https://news.google.com/rss/search", headers=UA, timeout=20,
+                         params={"q": f'"{wiki_title}" when:30d', **CFG.get("news_region", {"hl": "en-NG", "gl": "NG", "ceid": "NG:en"})})
+        news = len(ET.fromstring(r.content).findall(".//item"))
+    except Exception:
+        pass
+    try:
+        q = " ".join(wiki_title.split()[:4])
+        r = requests.get("https://suggestqueries.google.com/complete/search", headers=UA, timeout=20,
+                         params={"client": "firefox", "ds": "yt", "q": q})
+        sugg = len(r.json()[1])
+    except Exception:
+        pass
+    score = _m.log10(views + 1) * 2 + min(news, 30) / 6 + sugg / 2
+    return score, f"{views} wiki views/60d, {news} news/30d, {sugg} YT searches"
 
 
 # ---------------------------------------------------------------- script
