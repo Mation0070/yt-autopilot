@@ -5,7 +5,8 @@
   "Arm Holdings",
   "2021 Suez Canal obstruction",
   "Yiwu",
-  "Starlink"
+  "Starlink",
+  "Palantir"
  ],
  "uploads": [
   {
@@ -43,6 +44,12 @@
    "title": "How SpaceX Built a Dominant Orbital Telecom Network",
    "id": "rlilgMdqswc",
    "date": "2026-11-05 14:40"
+  },
+  {
+   "kind": "short",
+   "title": "Palantir: Data Integration and Modern Defense Technology",
+   "id": "9h_FTABXAdA",
+   "date": "2026-11-05 16:04"
   }
  ],
  "insights": {
