@@ -36,5 +36,17 @@ fallback_footage:
   - data center servers
   - corporate office building
 
+# Brand look for graphics, captions and thumbnails
+brand:
+  name: "Undercurrent Docs"
+  bg: "#0A0F1C"
+  bg2: "#16213A"
+  accent: "#FFB627"
+  accent2: "#3DA5FF"
+  land: "#1F2A44"
+music_volume_long: 0.09
+music_volume_short: 0.13
+teasers: true
+
 # Never repeat topics already covered by the other channel
 avoid_from: [state.json]
