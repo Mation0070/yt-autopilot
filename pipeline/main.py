@@ -12,6 +12,7 @@ import requests, yaml
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import graphics  # noqa: E402  animated maps / numbers / charts / timelines (free, Pillow-drawn)
 import music  # noqa: E402  original generated soundtrack (no copyright claims)
+import research  # noqa: E402  news articles, Wikidata facts, World Bank data (beyond Wikipedia)
 import thumbs  # noqa: E402  branded thumbnails
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -251,14 +252,24 @@ def build_sources(t):
     except Exception as e:
         log("related research skipped:", e); extra = []
     if not extra:
-        return main[:budget], [t.get("wiki_title")]
-    share = int(budget * 0.6)
-    rest = (budget - min(len(main), share)) // len(extra)
-    txt = f"[{t.get('wiki_title')}]\n" + main[:share]
-    for title, text in extra:
-        txt += f"\n\n[{title}]\n" + text[:rest]
-    log("research sources:", t.get("wiki_title"), "+", ", ".join(x[0] for x in extra))
-    return txt, [t.get("wiki_title")] + [x[0] for x in extra]
+        txt, names = f"[WIKIPEDIA - {t.get('wiki_title')}]\n" + main[:budget], [t.get("wiki_title")]
+    else:
+        share = int(budget * 0.6)
+        rest = (budget - min(len(main), share)) // len(extra)
+        txt = f"[WIKIPEDIA - {t.get('wiki_title')}]\n" + main[:share]
+        for title, text in extra:
+            txt += f"\n\n[WIKIPEDIA - {title}]\n" + text[:rest]
+        names = [t.get("wiki_title")] + [x[0] for x in extra]
+        log("research sources:", t.get("wiki_title"), "+", ", ".join(x[0] for x in extra))
+    # beyond Wikipedia: key facts, country data and recent news coverage
+    try:
+        more, more_names = research.extra_research(t.get("wiki_title"), t["topic"], main,
+                                                   budget=CFG.get("extra_source_chars", max(5000, int(budget * 0.45))))
+    except Exception as e:
+        log("extra research skipped:", str(e)[:150]); more, more_names = "", []
+    if more:
+        txt += "\n\n" + more
+    return txt, names + more_names
 
 
 def news_headlines(q, n=8):
@@ -449,7 +460,9 @@ Angle / creator notes: {t['angle'] or 'your choice'}
 
 STRICT FACT RULES: Use ONLY facts found in the SOURCES below. Never invent numbers, dates, quotes or events.
 If a detail is not in the sources, leave it out. Recent headlines may be mentioned only as headlines say.
-Use more than one of the source articles so the story has context nobody else tells.
+The SOURCES mix Wikipedia, Wikidata key facts, World Bank country data and recent news articles: combine them
+so the story has context nobody else tells. When sources disagree, prefer the most recent one, and say the year
+with numbers that change over time (e.g. "in 2025, revenue was..."). Bring in fresh news developments where relevant.
 Write for the ear: short sentences, vivid, conversational, no lists, no markdown, no emojis, no stage directions.
 STRUCTURE FOR THIS VIDEO: {random.choice(STRUCTURES)}
 HUMAN TOUCH (required): include one clearly-framed opinion or analysis line as the channel's own take
@@ -520,7 +533,7 @@ curiosity-driven: only rewrite it if it is false or misleading, and keep its hoo
 itself cannot be made acceptable.
 Return JSON: {{"ok": true/false, "issues": ["..."], "script": <the corrected script JSON>}}
 SCRIPT: {json.dumps(s, ensure_ascii=False)}
-SOURCES: {sources[:8000]}""", temperature=0.2)
+SOURCES: {sources[:14000]}""", temperature=0.2)
     except Exception as e:
         log("policy review unavailable, using script as written:", str(e)[:150])
         return s
@@ -929,8 +942,11 @@ def build_description(script, kind, state, topic):
         prev = [u for u in state.get("uploads", []) if u.get("kind") == "long" and u.get("id")][-3:]
         if prev:
             parts.append("Watch next:\n" + "\n".join(f"- {u['title']}: https://youtu.be/{u['id']}" for u in reversed(prev)))
-    src = ", ".join(x for x in (topic.get("source_titles") or []) if x) or "Wikipedia"
-    parts.append(f"Sources: Wikipedia ({src}) and public news reports.\nNarration uses an AI voice; "
+    names = [x for x in (topic.get("source_titles") or []) if x]
+    wiki = [x for x in names if "." not in x and x not in ("Wikidata", "World Bank")]
+    other = [x for x in names if x not in wiki]
+    src = (f"Wikipedia ({', '.join(wiki)})" if wiki else "Wikipedia") + (", " + ", ".join(dict.fromkeys(other)) if other else "")
+    parts.append(f"Sources: {src}.\nNarration uses an AI voice; "
                  "research, script and graphics are produced for this channel.")
     return "\n\n".join(p for p in parts if p)
 
