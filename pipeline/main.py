@@ -264,7 +264,8 @@ def build_sources(t):
     # beyond Wikipedia: key facts, country data and recent news coverage
     try:
         more, more_names = research.extra_research(t.get("wiki_title"), t["topic"], main,
-                                                   budget=CFG.get("extra_source_chars", max(5000, int(budget * 0.45))))
+                                                   budget=CFG.get("extra_source_chars", max(5000, int(budget * 0.45))),
+                                                   related=names[1:])
     except Exception as e:
         log("extra research skipped:", str(e)[:150]); more, more_names = "", []
     if more:
