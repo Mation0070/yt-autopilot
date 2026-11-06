@@ -4,3 +4,4 @@ edge-tts>=7.0
 pillow>=10.0
 google-api-python-client>=2.100
 google-auth>=2.23
+numpy>=1.26
