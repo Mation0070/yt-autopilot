@@ -24,5 +24,17 @@ fallback_footage:
   - city traffic night
   - stock market screen
 
+# Brand look for graphics, captions and thumbnails
+brand:
+  name: "Auto Info"
+  bg: "#07140F"
+  bg2: "#0F2A1E"
+  accent: "#F5C542"
+  accent2: "#2ED38A"
+  land: "#173326"
+music_volume_long: 0.09
+music_volume_short: 0.13
+teasers: true
+
 # Never repeat topics already covered by the other channel
 avoid_from: [state_docs.json]
