@@ -344,7 +344,7 @@ def sec_facts(wiki_title, claims=None):
 
 
 # ---------------------------------------------------------------- bundle
-def extra_research(wiki_title, topic, wiki_text, budget=6000):
+def extra_research(wiki_title, topic, wiki_text, budget=6000, related=None):
     """Returns (text block for the scriptwriter, list of source names used)."""
     blocks, names = [], []
     ent = {}
@@ -356,6 +356,10 @@ def extra_research(wiki_title, topic, wiki_text, budget=6000):
         log("wikidata skipped:", str(e)[:100])
     try:
         sec = sec_facts(wiki_title, (ent or {}).get("claims")) if wiki_title else ""
+        for rt in (related or [])[:3]:  # e.g. topic "CUDA" -> related article "Nvidia" is the listed company
+            if sec:
+                break
+            sec = sec_facts(rt)
         if sec:
             blocks.append("[OFFICIAL FINANCIALS - US SEC EDGAR filings]\n" + sec); names.append("SEC EDGAR")
     except Exception as e:
