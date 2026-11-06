@@ -221,9 +221,13 @@ def wiki_article(title):
     return page.get("title"), text
 
 
-def related_sources(main_title, topic, n=2):
+def related_sources(main_title, topic, n=2, related=None):
     """Extra research: the most relevant other Wikipedia articles, so scripts aren't a retelling of one page."""
     out, seen = [], {norm(main_title or "")}
+    for rt in (related or [])[:n]:
+        t, text = wiki_article(str(rt))
+        if t and norm(t) not in seen and len(text) > 1500:
+            seen.add(norm(t)); out.append((t, text))
     for q in (f"{topic} history economics", f"{main_title} business"):
         s = wiki_get({"action": "query", "list": "search", "srsearch": q, "srlimit": 6})
         for h in s.get("query", {}).get("search", []):
@@ -243,7 +247,7 @@ def build_sources(t):
     budget = CFG.get("source_chars", 14000)
     main = (t.get("source") or "")
     try:
-        extra = related_sources(t.get("wiki_title") or t["topic"], t["topic"])
+        extra = related_sources(t.get("wiki_title") or t["topic"], t["topic"], related=t.get("related"))
     except Exception as e:
         log("related research skipped:", e); extra = []
     if not extra:
@@ -325,7 +329,8 @@ Favour stories with conflict, high stakes, big numbers, rivalries, scandals, col
 those get clicked and watched to the end.
 Do NOT repeat or closely overlap these already-made topics: {avoid}
 {LEARN}
-Return JSON: {{"topics":[{{"topic":"short working title","wikipedia_title":"exact article title","angle":"the hook/story angle"}}]}}""")
+Return JSON: {{"topics":[{{"topic":"short working title","wikipedia_title":"exact article title","angle":"the hook/story angle",
+"related_wikipedia_titles":["2 other exact English Wikipedia article titles with key background for this story"]}}]}}""")
         cands = data.get("topics", [])
         past = [norm(u) for u in state["used"]] + [norm(u.get("title", "")) for u in state.get("uploads", [])]
         scored = []
@@ -345,7 +350,7 @@ Return JSON: {{"topics":[{{"topic":"short working title","wikipedia_title":"exac
             score, c, title, text = scored[0]
             log(f"auto topic (best demand {score:.1f}):", c["topic"], "| wiki:", title)
             return {"topic": c["topic"], "angle": c.get("angle", ""), "wiki_title": title,
-                    "source": text, "key": title}
+                    "source": text, "key": title, "related": c.get("related_wikipedia_titles") or []}
     raise RuntimeError("could not find a fresh topic")
 
 
@@ -420,19 +425,20 @@ def write_script(kind, t):
 Segment 1 is a scroll-stopping hook in under 12 words. Leave the viewer wanting the full story. The FINAL segment
 must say the full documentary is on our channel (e.g. 'The full story is on our channel - and it gets wilder.').
 Title must be under 60 characters, different from the documentary title, and end with ' #Shorts'.
-Give 2-3 segments a graphic."""
+Give EXACTLY 3 segments (never the first one) a graphic."""
     elif kind == "short":
         spec = """A YouTube Short of 120-150 words total (about 50 seconds spoken).
 5-7 segments. Segment 1 is a scroll-stopping hook in under 12 words. The FINAL segment must end with a short,
 natural call to action asking viewers to tap like and subscribe (e.g. 'If that surprised you, hit like and
 subscribe for more.'). Title must be under 60 characters and end with ' #Shorts'.
-Give 2-3 segments a graphic."""
+Give EXACTLY 3 segments (never the first one) a graphic."""
     else:
         spec = f"""A documentary-style YouTube video of {CFG.get('long_words', '950-1150')} words (about {CFG.get('long_minutes', 7)} minutes spoken).
 {CFG.get('long_segments', '11-15')} segments. The first segment is a strong 2-3 sentence hook that creates curiosity (no 'welcome back',
 no 'in this video'). Tell it as a story with tension: origins, turning points, numbers, what it means.
 Every 2-3 minutes re-hook the viewer with an open loop ("but that wasn't the real problem...").
 Close with a takeaway and a one-line call to subscribe. Title: under 70 characters, curiosity-driven, not clickbait lies.
+Titles: specific and intriguing (a number, a twist or a stakes word), no ALL-CAPS label prefixes like "SCAM:" or "EXPOSED:".
 CHAPTERS: split the story into 4-6 chapters. The first segment of each chapter (except the hook) gets
 "chapter":"<2-5 word chapter title>"; other segments "chapter": null.
 Give about 40% of segments a graphic (never two "statement" graphics in a row)."""
@@ -509,8 +515,9 @@ people of crimes not established in the sources; hate, harassment, violence, gra
 harmful advice; personalised financial/investment advice or get-rich-quick claims; medical claims; profanity;
 content unsuitable for advertisers; spammy or irrelevant tags/hashtags; anything copied verbatim at length.
 Fix every problem you can by rewriting the affected title/description/narration while keeping the same JSON
-structure and keys (keep the "graphic", "chapter", "thumb_*" fields). Set "ok" false ONLY if the topic itself
-cannot be made acceptable.
+structure and keys (keep the "graphic", "chapter", "thumb_*" fields). Keep the title compelling and
+curiosity-driven: only rewrite it if it is false or misleading, and keep its hook. Set "ok" false ONLY if the topic
+itself cannot be made acceptable.
 Return JSON: {{"ok": true/false, "issues": ["..."], "script": <the corrected script JSON>}}
 SCRIPT: {json.dumps(s, ensure_ascii=False)}
 SOURCES: {sources[:8000]}""", temperature=0.2)
@@ -545,16 +552,15 @@ def clean_meta(script, kind):
         if t and t.lower().strip("#") not in ("viral", "shorts", "trending", "fyp") and total + len(t) + 1 <= 450:
             tags.append(t); total += len(t) + 1
     script["tags"] = tags
+    script["hook_text"] = " ".join(str(script.get("hook_text") or "").split()[:4])
     # graphics: keep only well-formed ones, at most one per segment, never on two segments in a row for Shorts
-    prev = False
     for i, g in enumerate(script.get("segments", [])):
         spec = graphics.validate(g.get("graphic"))
         if spec and spec["type"] == "chapter":
             spec = None
-        if kind == "short" and (i == 0 or prev):
-            spec = None  # Short opens on footage + hook text; graphics alternate with footage
+        if kind == "short" and i == 0:
+            spec = None  # Short opens on footage + the big hook text
         g["graphic"] = spec
-        prev = bool(spec)
         if kind != "long":
             g["chapter"] = None
         elif g.get("chapter"):
