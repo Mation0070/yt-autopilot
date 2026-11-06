@@ -8,7 +8,8 @@
   "Starlink",
   "Palantir",
   "Panama Canal",
-  "LVMH"
+  "LVMH",
+  "De Beers"
  ],
  "uploads": [
   {
@@ -64,6 +65,15 @@
    "title": "How LVMH Built a $500B Luxury Empire #Shorts",
    "id": "RTXDwtk80JQ",
    "date": "2026-11-06 15:53"
+  },
+  {
+   "kind": "short",
+   "title": "How Tech Broke the Diamond Monopoly #Shorts",
+   "id": "AHkardf4JOg",
+   "date": "2026-11-06 22:38",
+   "topic": "How Lab Tech Shattered a $100B Diamond Monopoly",
+   "wiki": "De Beers",
+   "graphics": 3
   }
  ],
  "insights": {
