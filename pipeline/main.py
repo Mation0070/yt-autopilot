@@ -460,7 +460,7 @@ Angle / creator notes: {t['angle'] or 'your choice'}
 
 STRICT FACT RULES: Use ONLY facts found in the SOURCES below. Never invent numbers, dates, quotes or events.
 If a detail is not in the sources, leave it out. Recent headlines may be mentioned only as headlines say.
-The SOURCES mix Wikipedia, Wikidata key facts, World Bank country data and recent news articles: combine them
+The SOURCES mix Wikipedia, Wikidata key facts, official SEC filings, World Bank country data and recent news articles: combine them
 so the story has context nobody else tells. When sources disagree, prefer the most recent one, and say the year
 with numbers that change over time (e.g. "in 2025, revenue was..."). Bring in fresh news developments where relevant.
 Write for the ear: short sentences, vivid, conversational, no lists, no markdown, no emojis, no stage directions.
@@ -943,7 +943,7 @@ def build_description(script, kind, state, topic):
         if prev:
             parts.append("Watch next:\n" + "\n".join(f"- {u['title']}: https://youtu.be/{u['id']}" for u in reversed(prev)))
     names = [x for x in (topic.get("source_titles") or []) if x]
-    wiki = [x for x in names if "." not in x and x not in ("Wikidata", "World Bank")]
+    wiki = [x for x in names if "." not in x and x not in ("Wikidata", "World Bank", "SEC EDGAR")]
     other = [x for x in names if x not in wiki]
     src = (f"Wikipedia ({', '.join(wiki)})" if wiki else "Wikipedia") + (", " + ", ".join(dict.fromkeys(other)) if other else "")
     parts.append(f"Sources: {src}.\nNarration uses an AI voice; "
