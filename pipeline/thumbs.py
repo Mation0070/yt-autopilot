@@ -51,6 +51,13 @@ def make_thumbnail(frame_path, text, out, brand=None, accent_word=None, badge=No
             hot.add(i)
             if re.search(r"\d", w) and i + 1 < len(words) and re.match(r"(TRILLION|BILLION|MILLION|PERCENT)", words[i + 1]):
                 hot.add(i + 1)
+    if not hot:  # accent word not found as written (e.g. "$15.3T" vs "$15.3 TRILLION"): highlight the number
+        for i, w in enumerate(words):
+            if re.search(r"\d|\$|%", w):
+                hot.add(i)
+                if i + 1 < len(words) and re.match(r"(TRILLION|BILLION|MILLION|PERCENT)", words[i + 1]):
+                    hot.add(i + 1)
+                break
     lh = int(f.size * 1.02)
     y = (H - lh * len(lines)) // 2 - 10
     idx = 0
