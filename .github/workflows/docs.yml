@@ -11,6 +11,10 @@ on:
         description: "long or short"
         default: short
         required: true
+      dry_run:
+        description: "yes = make the video but don't upload it (test)"
+        default: "no"
+        required: false
 
 permissions:
   contents: write
@@ -63,13 +67,13 @@ jobs:
           SHEET_CSV_URL: ${{ secrets.SHEET_CSV_URL_DOCS }}
         run: |
           for attempt in 1 2 3; do
-            python pipeline/main.py ${{ steps.kind.outputs.kind }} && exit 0
+            python pipeline/main.py ${{ steps.kind.outputs.kind }} ${{ github.event.inputs.dry_run == 'yes' && '--no-upload' || '' }} && exit 0
             [ $attempt -lt 3 ] && echo "Attempt $attempt failed - retrying in 8 minutes" && sleep 480
           done
           exit 1
 
       - name: Save progress
-        if: always()
+        if: always() && github.event.inputs.dry_run != 'yes'
         run: |
           git config user.name "autopilot"
           git config user.email "autopilot@users.noreply.github.com"
