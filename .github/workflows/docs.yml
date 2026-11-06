@@ -65,6 +65,7 @@ jobs:
           YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
           YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN_DOCS }}
           SHEET_CSV_URL: ${{ secrets.SHEET_CSV_URL_DOCS }}
+          SEC_CONTACT_EMAIL: ${{ secrets.SEC_CONTACT_EMAIL }}
         run: |
           for attempt in 1 2 3; do
             python pipeline/main.py ${{ steps.kind.outputs.kind }} ${{ github.event.inputs.dry_run == 'yes' && '--no-upload' || '' }} && exit 0
