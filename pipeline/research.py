@@ -3,6 +3,7 @@
 - News articles: recent coverage found via Bing News RSS (GDELT as backup), full text extracted with trafilatura
 - Key facts: Wikidata (founded, founders, HQ, CEO, employees, revenue, net income, market cap...)
 - Country data: World Bank (GDP, growth, inflation, population) for the countries the story is about
+- Official company financials: US SEC EDGAR 10-K figures + recent filings (needs SEC_CONTACT_EMAIL secret)
 
 Every function fails quietly and returns "" / [] so a research hiccup never stops a video.
 """
@@ -235,16 +236,130 @@ def world_bank(countries):
     return "\n".join(lines)
 
 
+# ---------------------------------------------------------------- SEC EDGAR (US-listed companies)
+import os  # noqa: E402
+
+_TICKERS = None
+SEC_CONCEPTS = [  # (label, us-gaap concepts to try in order)
+    ("Revenue", ["Revenues", "RevenueFromContractWithCustomerExcludingAssessedTax", "SalesRevenueNet",
+                 "RevenuesNetOfInterestExpense", "Revenue"]),
+    ("Net income", ["NetIncomeLoss", "ProfitLoss"]),
+    ("Operating income", ["OperatingIncomeLoss"]),
+    ("Total assets", ["Assets"]),
+    ("Total liabilities", ["Liabilities"]),
+    ("Long-term debt", ["LongTermDebt", "LongTermDebtNoncurrent"]),
+    ("Cash", ["CashAndCashEquivalentsAtCarryingValue"]),
+    ("R&D spending", ["ResearchAndDevelopmentExpense"]),
+]
+
+
+def _sec_headers():
+    email = os.environ.get("SEC_CONTACT_EMAIL", "").strip()
+    return {"User-Agent": f"yt-autopilot research {email}"} if email else None
+
+
+def _sec_get(url):
+    h = _sec_headers()
+    if not h:
+        return None
+    for attempt in range(3):
+        try:
+            r = requests.get(url, headers=h, timeout=30)
+            if r.status_code == 200:
+                return r.json()
+            if r.status_code == 404:
+                return None
+        except Exception:
+            pass
+        time.sleep(2 * (attempt + 1))
+    return None
+
+
+def _norm_co(s):
+    s = re.sub(r"\(.*?\)|/.*$", "", str(s).lower())
+    s = re.sub(r"[^a-z0-9 ]+", " ", s)
+    s = re.sub(r"\b(inc|incorporated|corp|corporation|co|company|ltd|limited|plc|holdings?|group|the|sa|nv|ag|se)\b", " ", s)
+    return " ".join(s.split())
+
+
+def sec_cik(wiki_title, claims=None):
+    """CIK from Wikidata (P5531) if available, else by matching the company name to the SEC ticker list."""
+    try:
+        for c in (claims or {}).get("P5531", []):
+            v = c.get("mainsnak", {}).get("datavalue", {}).get("value")
+            if v:
+                return str(v).zfill(10)
+    except Exception:
+        pass
+    global _TICKERS
+    if _TICKERS is None:
+        data = _sec_get("https://www.sec.gov/files/company_tickers.json") or {}
+        _TICKERS = {}
+        for row in data.values():
+            _TICKERS.setdefault(_norm_co(row["title"]), str(row["cik_str"]).zfill(10))
+    return _TICKERS.get(_norm_co(wiki_title))
+
+
+def sec_facts(wiki_title, claims=None):
+    """Official annual figures from 10-K filings (last 3 fiscal years) + recent major filings."""
+    if not _sec_headers():
+        return ""
+    cik = sec_cik(wiki_title, claims)
+    if not cik:
+        return ""
+    facts = _sec_get(f"https://data.sec.gov/api/xbrl/companyfacts/CIK{cik}.json")
+    if not facts:
+        return ""
+    tax = facts.get("facts", {})
+    gaap = {**tax.get("ifrs-full", {}), **tax.get("us-gaap", {})}  # US companies + foreign filers (20-F, IFRS)
+    lines = []
+    for label, concepts in SEC_CONCEPTS:
+        best = {}
+        for con in concepts:
+            units = gaap.get(con, {}).get("units", {}).get("USD", [])
+            annual = {}
+            for u in units:
+                if u.get("form") in ("10-K", "20-F") and u.get("fp") == "FY" and u.get("end"):
+                    # keep the full-year value for that fiscal year (latest filing wins)
+                    if u.get("start") and (int(u["end"][:4]) - int(u["start"][:4])) > 1:
+                        continue
+                    annual[u["end"][:4]] = u["val"]
+            if annual and (not best or max(annual) > max(best)):
+                best = annual  # the concept with the most recent data
+        if best:
+            yrs = sorted(best)[-3:]
+            lines.append(f"- {label}: " + "; ".join(f"FY{y} US$ {_fmt_amount(best[y])}" for y in yrs))
+    sub = _sec_get(f"https://data.sec.gov/submissions/CIK{cik}.json") or {}
+    rec = sub.get("filings", {}).get("recent", {})
+    events = []
+    for form, date, desc in zip(rec.get("form", []), rec.get("filingDate", []), rec.get("primaryDocDescription", [])):
+        if form in ("10-K", "20-F", "8-K", "6-K", "S-1", "F-1", "DEF 14A", "SC 13D") and len(events) < 6:
+            events.append(f"{date} {form}" + (f" ({desc})" if desc and desc.upper() != form else ""))
+    if events:
+        lines.append("- Recent SEC filings: " + "; ".join(events))
+    if lines:
+        log("sec edgar:", facts.get("entityName", cik), f"({len(lines)} lines)")
+        return f"Company: {facts.get('entityName', '')} (official SEC filings)\n" + "\n".join(lines)
+    return ""
+
+
 # ---------------------------------------------------------------- bundle
 def extra_research(wiki_title, topic, wiki_text, budget=6000):
     """Returns (text block for the scriptwriter, list of source names used)."""
     blocks, names = [], []
+    ent = {}
     try:
-        facts, _ = wikidata_facts(wiki_title) if wiki_title else ("", {})
+        facts, ent = wikidata_facts(wiki_title) if wiki_title else ("", {})
         if facts:
             blocks.append("[KEY FACTS - Wikidata]\n" + facts); names.append("Wikidata")
     except Exception as e:
         log("wikidata skipped:", str(e)[:100])
+    try:
+        sec = sec_facts(wiki_title, (ent or {}).get("claims")) if wiki_title else ""
+        if sec:
+            blocks.append("[OFFICIAL FINANCIALS - US SEC EDGAR filings]\n" + sec); names.append("SEC EDGAR")
+    except Exception as e:
+        log("sec skipped:", str(e)[:100])
     try:
         cs = countries_in(wiki_text or "")
         wb = world_bank(cs) if cs else ""
