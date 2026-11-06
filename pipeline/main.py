@@ -1,4 +1,4 @@
-"""YouTube autopilot: topic -> research -> script -> voice -> footage -> captions -> render -> upload.
+"""YouTube autopilot: topic -> research -> script -> voice -> footage + motion graphics -> captions -> render -> upload.
 
 Usage:  python pipeline/main.py long|short [--no-upload]
 Env:    GEMINI_API_KEY, PIXABAY_API_KEY (or PEXELS_API_KEY), YT_CLIENT_ID, YT_CLIENT_SECRET, YT_REFRESH_TOKEN,
@@ -9,12 +9,18 @@ import xml.etree.ElementTree as ET
 
 import requests, yaml
 
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import graphics  # noqa: E402  animated maps / numbers / charts / timelines (free, Pillow-drawn)
+import music  # noqa: E402  original generated soundtrack (no copyright claims)
+import thumbs  # noqa: E402  branded thumbnails
+
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 CFG = yaml.safe_load(open(ROOT / os.environ.get("CONFIG", "config.yaml"), encoding="utf-8"))
 STATE_PATH = ROOT / os.environ.get("STATE", "state.json")
 WORK = ROOT / "work"
 UA = {"User-Agent": "yt-autopilot/1.0 (educational channel bot)"}
 LEARN = ""  # weekly analytics learnings, filled in main()
+BRAND = {**graphics.DEFAULT_BRAND, **(CFG.get("brand") or {})}
 STRUCTURES = [
     "Cold open on a surprising moment, then rewind to how it happened.",
     "Start with a question the viewer can't answer, then reveal the answer step by step.",
@@ -215,6 +221,42 @@ def wiki_article(title):
     return page.get("title"), text
 
 
+def related_sources(main_title, topic, n=2):
+    """Extra research: the most relevant other Wikipedia articles, so scripts aren't a retelling of one page."""
+    out, seen = [], {norm(main_title or "")}
+    for q in (f"{topic} history economics", f"{main_title} business"):
+        s = wiki_get({"action": "query", "list": "search", "srsearch": q, "srlimit": 6})
+        for h in s.get("query", {}).get("search", []):
+            if len(out) >= n:
+                return out
+            if norm(h["title"]) in seen or re.search(r"\(disambiguation\)|^List of", h["title"]):
+                continue
+            seen.add(norm(h["title"]))
+            t, text = wiki_article(h["title"])
+            if t and len(text) > 1500:
+                out.append((t, text))
+    return out
+
+
+def build_sources(t):
+    """Main article + related articles, trimmed to the configured budget."""
+    budget = CFG.get("source_chars", 14000)
+    main = (t.get("source") or "")
+    try:
+        extra = related_sources(t.get("wiki_title") or t["topic"], t["topic"])
+    except Exception as e:
+        log("related research skipped:", e); extra = []
+    if not extra:
+        return main[:budget], [t.get("wiki_title")]
+    share = int(budget * 0.6)
+    rest = (budget - min(len(main), share)) // len(extra)
+    txt = f"[{t.get('wiki_title')}]\n" + main[:share]
+    for title, text in extra:
+        txt += f"\n\n[{title}]\n" + text[:rest]
+    log("research sources:", t.get("wiki_title"), "+", ", ".join(x[0] for x in extra))
+    return txt, [t.get("wiki_title")] + [x[0] for x in extra]
+
+
 def news_headlines(q, n=8):
     try:
         r = requests.get("https://news.google.com/rss/search", headers=UA, timeout=30,
@@ -223,6 +265,30 @@ def news_headlines(q, n=8):
         return [f"- {i.findtext('title')} ({(i.findtext('pubDate') or '')[:16]})" for i in items]
     except Exception:
         return []
+
+
+def teaser_topic(state):
+    """Shorts funnel: the first Short after a new long video teases it (same research, one killer fact)."""
+    if CFG.get("teasers", True) is False:
+        return None
+    teased = set(state.get("teased", []))
+    now = time.time()
+    for u in reversed(state.get("uploads", [])):
+        if u.get("kind") != "long" or not u.get("id") or not u.get("wiki"):
+            continue
+        try:
+            age = now - time.mktime(time.strptime(u["date"], "%Y-%m-%d %H:%M"))
+        except Exception:
+            age = 0
+        if u["id"] in teased or age > 4 * 86400:
+            return None
+        title, text = wiki_article(u["wiki"])
+        if not text:
+            return None
+        log("teaser Short for long video:", u["title"])
+        return {"topic": u.get("topic") or u["title"], "angle": "", "wiki_title": title, "source": text,
+                "key": None, "teaser_of": u}
+    return None
 
 
 def pick_topic(kind, state):
@@ -255,6 +321,8 @@ def pick_topic(kind, state):
 Propose 10 fresh topics for a {fmt}. Each must be about a real subject that has its own
 English Wikipedia article (company, person's business empire, industry, economic event, policy, market).
 Mix famous topics with surprising lesser-known ones. Prefer topics people actually search for.
+Favour stories with conflict, high stakes, big numbers, rivalries, scandals, collapses or comebacks -
+those get clicked and watched to the end.
 Do NOT repeat or closely overlap these already-made topics: {avoid}
 {LEARN}
 Return JSON: {{"topics":[{{"topic":"short working title","wikipedia_title":"exact article title","angle":"the hook/story angle"}}]}}""")
@@ -328,19 +396,46 @@ def demand_score(wiki_title, topic):
 
 
 # ---------------------------------------------------------------- script
+GRAPHICS_GUIDE = """ANIMATED GRAPHICS (this is what makes the channel look premium and original - use them well):
+Some segments get a "graphic": an animated on-screen visual shown while that segment is narrated.
+Allowed graphic objects (use ONLY numbers/names/dates that appear in the narration AND the sources):
+ {"type":"number","value":"<number, e.g. 32000000000>","prefix":"$","suffix":"","label":"<what it is, max 8 words>"}
+ {"type":"map","countries":["<country>", "..."],"label":"<2-5 words>"}            (geography, trade routes, rivals)
+ {"type":"bars","title":"<max 6 words>","items":[{"label":"<name>","value":<number>}, ...2-5 items],"unit":"%","prefix":""}
+ {"type":"timeline","title":"<max 6 words>","events":[{"year":"<year>","label":"<max 6 words>"}, ...2-5 events]}
+ {"type":"compare","title":"<max 6 words>","left":{"label":"<max 5 words>","value":"<short value>"},"right":{"label":"...","value":"..."}}
+ {"type":"statement","kicker":"<2-3 words e.g. THE CATCH>","text":"<the key insight, max 14 words>"}
+Put the graphic on the segment whose narration mentions that number/place/comparison. Vary the types.
+Segments without a graphic: "graphic": null (they get stock footage)."""
+
+
 def write_script(kind, t):
-    sources = (t["source"] or "")[:CFG.get("source_chars", 14000)]
+    sources, source_titles = build_sources(t)
+    t["source_titles"] = source_titles
     news = "\n".join(news_headlines(t["wiki_title"] or t["topic"]))
-    if kind == "short":
+    teaser = t.get("teaser_of")
+    if kind == "short" and teaser:
+        spec = f"""A YouTube Short TEASER of 110-140 words total (about 45 seconds spoken) for our full documentary
+"{teaser['title']}". 5-7 segments. Build it around the single most jaw-dropping fact or twist from the sources.
+Segment 1 is a scroll-stopping hook in under 12 words. Leave the viewer wanting the full story. The FINAL segment
+must say the full documentary is on our channel (e.g. 'The full story is on our channel - and it gets wilder.').
+Title must be under 60 characters, different from the documentary title, and end with ' #Shorts'.
+Give 2-3 segments a graphic."""
+    elif kind == "short":
         spec = """A YouTube Short of 120-150 words total (about 50 seconds spoken).
 5-7 segments. Segment 1 is a scroll-stopping hook in under 12 words. The FINAL segment must end with a short,
 natural call to action asking viewers to tap like and subscribe (e.g. 'If that surprised you, hit like and
-subscribe for more.'). Title must be under 60 characters and end with ' #Shorts'."""
+subscribe for more.'). Title must be under 60 characters and end with ' #Shorts'.
+Give 2-3 segments a graphic."""
     else:
         spec = f"""A documentary-style YouTube video of {CFG.get('long_words', '950-1150')} words (about {CFG.get('long_minutes', 7)} minutes spoken).
 {CFG.get('long_segments', '11-15')} segments. The first segment is a strong 2-3 sentence hook that creates curiosity (no 'welcome back',
 no 'in this video'). Tell it as a story with tension: origins, turning points, numbers, what it means.
-Close with a takeaway and a one-line call to subscribe. Title: under 70 characters, curiosity-driven, not clickbait lies."""
+Every 2-3 minutes re-hook the viewer with an open loop ("but that wasn't the real problem...").
+Close with a takeaway and a one-line call to subscribe. Title: under 70 characters, curiosity-driven, not clickbait lies.
+CHAPTERS: split the story into 4-6 chapters. The first segment of each chapter (except the hook) gets
+"chapter":"<2-5 word chapter title>"; other segments "chapter": null.
+Give about 40% of segments a graphic (never two "statement" graphics in a row)."""
     prompt = f"""You are a top YouTube scriptwriter for this channel: {CFG['niche']}
 Write {spec}
 Topic: {t['topic']}
@@ -348,6 +443,7 @@ Angle / creator notes: {t['angle'] or 'your choice'}
 
 STRICT FACT RULES: Use ONLY facts found in the SOURCES below. Never invent numbers, dates, quotes or events.
 If a detail is not in the sources, leave it out. Recent headlines may be mentioned only as headlines say.
+Use more than one of the source articles so the story has context nobody else tells.
 Write for the ear: short sentences, vivid, conversational, no lists, no markdown, no emojis, no stage directions.
 STRUCTURE FOR THIS VIDEO: {random.choice(STRUCTURES)}
 HUMAN TOUCH (required): include one clearly-framed opinion or analysis line as the channel's own take
@@ -356,17 +452,24 @@ genuine question for viewers to answer in the comments. Vary sentence rhythm; ne
 {CFG.get('style', '')}
 {LEARN}
 
+{GRAPHICS_GUIDE}
+
 Also give exactly 3 'hashtags': specific, searchable topic hashtags (companies, countries, industries,
 e.g. #Dangote #Nigeria #Oil or #NVIDIA #AI #Semiconductors), no spaces, not generic ones like #viral.
 
-For each segment give a 'visual': a 2-4 word generic STOCK FOOTAGE search phrase that fits
-(e.g. 'oil refinery aerial', 'lagos traffic', 'cement factory', 'phone payment app'). Never use people's names or brand names in visuals.
+THUMBNAIL: "thumb_text" = 2-4 punchy words for the thumbnail (NOT the title repeated; e.g. "$32B FOR A BLUEPRINT"),
+"thumb_accent" = the one word of thumb_text to colour-highlight, "thumb_badge" = optional short number like "$140B" or "".
+
+For each segment give a 'visual': a 2-4 word generic STOCK FOOTAGE search phrase that fits, and 'visual_alt': a
+different second phrase (e.g. 'oil refinery aerial' / 'oil tanker sea'). Never use people's names or brand names in visuals.
 
 Return JSON:
 {{"title":"...","description":"2 short paragraphs summarising the video for YouTube SEO",
-"tags":["8-15 tags"],"hashtags":["#Topic","#Topic","#Topic"],"hook_text":"2-5 word punchy ON-SCREEN hook for the first 2 seconds, ALL CAPS, must be true","segments":[{{"narration":"...","visual":"..."}}]}}
+"tags":["8-15 tags"],"hashtags":["#Topic","#Topic","#Topic"],"hook_text":"2-5 word punchy ON-SCREEN hook for the first 2 seconds, ALL CAPS, must be true",
+"thumb_text":"...","thumb_accent":"...","thumb_badge":"...",
+"segments":[{{"narration":"...","visual":"...","visual_alt":"...","chapter":null,"graphic":null}}]}}
 
-SOURCES (Wikipedia: {t['wiki_title']}):
+SOURCES:
 {sources}
 
 RECENT HEADLINES:
@@ -376,6 +479,8 @@ RECENT HEADLINES:
     try:
         checked = gemini(f"""You are a strict fact-checker. Compare the SCRIPT JSON to the SOURCES.
 Remove or fix any sentence containing a claim (number, date, name, event, quote) not supported by the sources.
+Check the numbers, names and dates inside every "graphic" object too: fix them to match the sources, or set
+"graphic" to null if they can't be supported.
 Keep everything else word-for-word, keep the same JSON structure and keys, keep it flowing naturally.
 Return only the corrected JSON.
 SCRIPT: {json.dumps(s, ensure_ascii=False)}
@@ -388,6 +493,7 @@ HEADLINES: {news or 'none'}""", temperature=0.2)
     s["segments"] = [g for g in s["segments"] if g.get("narration", "").strip()]
     if kind == "short" and "#shorts" not in s["title"].lower():
         s["title"] = s["title"][:90] + " #Shorts"
+    t["_sources_text"] = sources
     return s
 
 
@@ -403,7 +509,8 @@ people of crimes not established in the sources; hate, harassment, violence, gra
 harmful advice; personalised financial/investment advice or get-rich-quick claims; medical claims; profanity;
 content unsuitable for advertisers; spammy or irrelevant tags/hashtags; anything copied verbatim at length.
 Fix every problem you can by rewriting the affected title/description/narration while keeping the same JSON
-structure and keys. Set "ok" false ONLY if the topic itself cannot be made acceptable.
+structure and keys (keep the "graphic", "chapter", "thumb_*" fields). Set "ok" false ONLY if the topic itself
+cannot be made acceptable.
 Return JSON: {{"ok": true/false, "issues": ["..."], "script": <the corrected script JSON>}}
 SCRIPT: {json.dumps(s, ensure_ascii=False)}
 SOURCES: {sources[:8000]}""", temperature=0.2)
@@ -418,6 +525,8 @@ SOURCES: {sources[:8000]}""", temperature=0.2)
     fixed = r.get("script")
     if isinstance(fixed, dict) and fixed.get("segments") and fixed.get("title"):
         fixed["segments"] = [g for g in fixed["segments"] if str(g.get("narration", "")).strip()]
+        for k in ("thumb_text", "thumb_accent", "thumb_badge", "hook_text"):
+            fixed.setdefault(k, s.get(k))
         return fixed
     return s
 
@@ -433,9 +542,23 @@ def clean_meta(script, kind):
     tags, total = [], 0
     for t in script.get("tags", []):
         t = strip(t).replace(",", "")[:30]
-        if t and total + len(t) + 1 <= 450:
+        if t and t.lower().strip("#") not in ("viral", "shorts", "trending", "fyp") and total + len(t) + 1 <= 450:
             tags.append(t); total += len(t) + 1
     script["tags"] = tags
+    # graphics: keep only well-formed ones, at most one per segment, never on two segments in a row for Shorts
+    prev = False
+    for i, g in enumerate(script.get("segments", [])):
+        spec = graphics.validate(g.get("graphic"))
+        if spec and spec["type"] == "chapter":
+            spec = None
+        if kind == "short" and (i == 0 or prev):
+            spec = None  # Short opens on footage + hook text; graphics alternate with footage
+        g["graphic"] = spec
+        prev = bool(spec)
+        if kind != "long":
+            g["chapter"] = None
+        elif g.get("chapter"):
+            g["chapter"] = strip(g["chapter"])[:40]
     return script
 
 
@@ -496,11 +619,14 @@ def pixabay_search(query, orientation):
 
 
 def stock_search(query, orientation):
+    # use both libraries: more variety, fewer repeated clips across videos
+    res = []
     if os.environ.get("PIXABAY_API_KEY"):
-        res = pixabay_search(query, orientation)
-        if res or not os.environ.get("PEXELS_API_KEY"):
-            return res
-    return pexels_search(query, orientation)
+        res += pixabay_search(query, orientation)
+    if os.environ.get("PEXELS_API_KEY") and (len(res) < 12 or random.random() < 0.5):
+        px = pexels_search(query, orientation)
+        res = [v for pair in zip(px, res) for v in pair] + px[len(res):] + res[len(px):] if res else px
+    return res
 
 
 def best_file(video, W, H):
@@ -512,10 +638,15 @@ def best_file(video, W, H):
     return min(pool, key=lambda f: f["width"] * f["height"])["link"]
 
 
-def get_clips(query, n, orientation, W, H, used_ids, d, tag):
-    vids = [v for v in stock_search(query, orientation) if v["id"] not in used_ids]
+def get_clips(queries, n, orientation, W, H, used_ids, d, tag):
+    queries = [q for q in queries if q] or [random.choice(CFG["fallback_footage"])]
+    vids = []
+    for q in queries:
+        vids += [v for v in stock_search(q, orientation) if v["id"] not in used_ids and v not in vids]
+        if len(vids) >= n * 2:
+            break
     if len(vids) < n:
-        q2 = " ".join(query.split()[:1]) if len(query.split()) > 1 else random.choice(CFG["fallback_footage"])
+        q2 = " ".join(queries[0].split()[:1]) if len(queries[0].split()) > 1 else random.choice(CFG["fallback_footage"])
         vids += [v for v in stock_search(q2, orientation) if v["id"] not in used_ids and v not in vids]
     if not vids:
         vids = [v for v in stock_search(random.choice(CFG["fallback_footage"]), orientation) if v["id"] not in used_ids]
@@ -547,17 +678,24 @@ def ts(t):
     return f"{int(h)}:{int(m):02d}:{s:05.2f}"
 
 
+def ass_color(hexcol):
+    h = hexcol.lstrip("#")
+    return f"&H00{h[4:6]}{h[2:4]}{h[0:2]}&".upper()
+
+
 def make_ass(segs, audio, W, H, short, path, hook=""):
-    size, margin, align = (96, int(H * 0.30), 2) if short else (54, 70, 2)
+    size, margin, align = (92, int(H * 0.30), 2) if short else (56, 70, 2)
     words_per = 3 if short else 7
+    acc = ass_color(BRAND["accent"])
+    fontname = "Poppins ExtraBold"
     lines = [
         "[Script Info]", "ScriptType: v4.00+", f"PlayResX: {W}", f"PlayResY: {H}", "",
         "[V4+ Styles]",
         "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, "
         "Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding",
-        f"Style: Default,DejaVu Sans,{size},&H00FFFFFF,&H00FFFFFF,&H00000000,&H64000000,-1,0,0,0,100,100,0,0,1,"
+        f"Style: Default,{fontname},{size},&H00FFFFFF,&H00FFFFFF,&H00000000,&H64000000,0,0,0,0,100,100,0,0,1,"
         f"{5 if short else 3},1,{align},60,60,{margin},1", "",
-        f"Style: Hook,DejaVu Sans,{118 if short else 90},&H0000E5FF,&H0000E5FF,&H00000000,&H96000000,-1,0,0,0,100,100,0,0,1,"
+        f"Style: Hook,Anton,{150 if short else 110},{acc.rstrip('&')},{acc.rstrip('&')},&H00000000,&H96000000,0,0,0,0,100,100,0,0,1,"
         f"8,2,8,70,70,{int(H * 0.13)},1", "",
         "[Events]", "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"]
     hook = re.sub(r"[{}\\]", "", str(hook or "")).strip().upper()
@@ -573,13 +711,13 @@ def make_ass(segs, audio, W, H, short, path, hook=""):
         for c in chunks:
             dt = speak * (len(c) + 3) / total
             if short:
-                # word-by-word highlight: current word yellow, others white
+                # word-by-word highlight: current word in brand accent, others white
                 ws = c.upper().split()
                 wt = sum(len(w) + 2 for w in ws) or 1
                 tw = t
                 for k, w in enumerate(ws):
                     wd = dt * (len(w) + 2) / wt
-                    txt = " ".join(("{\\c&H00E5FF&}" + x + "{\\c&HFFFFFF&}") if m == k else x for m, x in enumerate(ws))
+                    txt = " ".join(("{\\c" + acc + "}" + x + "{\\c&HFFFFFF&}") if m == k else x for m, x in enumerate(ws))
                     lines.append(f"Dialogue: 0,{ts(tw)},{ts(tw + wd)},Default,,0,0,0,,{txt}")
                     tw += wd
             else:
@@ -590,6 +728,17 @@ def make_ass(segs, audio, W, H, short, path, hook=""):
 
 
 # ---------------------------------------------------------------- render
+def stock_part(c, pd, W, H, out, zoom_in):
+    """One stock clip: brand colour grade + vignette + slow Ken Burns zoom."""
+    z = "min(1+0.0011*on,1.15)" if zoom_in else "max(1.15-0.0011*on,1)"
+    vf = (f"scale={int(W * 1.2)}:{int(H * 1.2)}:force_original_aspect_ratio=increase,"
+          f"crop={int(W * 1.2)}:{int(H * 1.2)},fps=30,"
+          f"zoompan=z='{z}':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=1:s={W}x{H}:fps=30,setsar=1,"
+          f"eq=contrast=1.07:saturation=1.12:brightness=-0.02,vignette=PI/5")
+    run(["ffmpeg", "-y", "-stream_loop", "-1", "-i", c, "-t", f"{pd:.3f}", "-vf", vf, "-an",
+         "-c:v", "libx264", "-preset", "veryfast", "-crf", "22", "-pix_fmt", "yuv420p", "-r", "30", out])
+
+
 def render(kind, script, d):
     short = kind == "short"
     W, H = (1080, 1920) if short else (1920, 1080)
@@ -597,38 +746,64 @@ def render(kind, script, d):
     segs = script["segments"]
     log(f"voicing {len(segs)} segments")
     audio = voice_segments(segs, d)
-    used_ids, parts = set(), []
+    used_ids, parts, stock_parts, chapters = set(), [], [], []
+    clock, chap_no = 0.0, 0
     for i, (g, (_, dur)) in enumerate(zip(segs, audio)):
-        n = max(1, math.ceil(dur / (2.3 if short else 5.0)))
-        clips = get_clips(g.get("visual") or "city", n, orient, W, H, used_ids, d, i)
-        if not clips:
-            raise RuntimeError("no footage found")
-        pd = dur / n
-        for j, c in enumerate(clips):
-            out = d / f"p{i:02d}_{j}.mp4"
-            # slow Ken Burns zoom, alternating in / out
-            z = "min(1+0.0011*on,1.15)" if (i + j) % 2 == 0 else "max(1.15-0.0011*on,1)"
-            vf = (f"scale={int(W * 1.2)}:{int(H * 1.2)}:force_original_aspect_ratio=increase,"
-                  f"crop={int(W * 1.2)}:{int(H * 1.2)},fps=30,"
-                  f"zoompan=z='{z}':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=1:s={W}x{H}:fps=30,setsar=1")
-            run(["ffmpeg", "-y", "-stream_loop", "-1", "-i", c, "-t", f"{pd:.3f}", "-vf", vf, "-an",
-                 "-c:v", "libx264", "-preset", "veryfast", "-crf", "22", "-pix_fmt", "yuv420p", "-r", "30", out])
-            parts.append(out)
+        left = dur
+        k = 0
+        # 1) chapter title card (long videos)
+        if g.get("chapter") and dur > 6:
+            chap_no += 1
+            chapters.append((clock, g["chapter"]))
+            cd = 2.6
+            try:
+                out = d / f"p{i:02d}_ch.mp4"
+                graphics.render_graphic({"type": "chapter", "number": chap_no, "title": g["chapter"]}, cd, W, H, BRAND, out, seed=i)
+                parts.append(out); left -= cd
+            except Exception as e:
+                log("chapter card skipped:", str(e)[:150])
+        # 2) animated graphic
+        spec = g.get("graphic")
+        if spec and left > 3.0:
+            gd = min(left * (0.8 if short else 0.55), 5.5 if short else 8.0)
+            if left - gd < 1.5:
+                gd = left
+            try:
+                out = d / f"p{i:02d}_g.mp4"
+                graphics.render_graphic(spec, gd, W, H, BRAND, out, seed=i)
+                parts.append(out); left -= gd
+                log(f"scene {i + 1}: {spec['type']} graphic ({gd:.1f}s)")
+            except Exception as e:
+                log("graphic skipped:", spec.get("type"), str(e)[:150])
+        # 3) stock footage for the rest of the segment
+        if left > 0.05:
+            n = max(1, math.ceil(left / (2.3 if short else 5.0)))
+            clips = get_clips([g.get("visual"), g.get("visual_alt")], n, orient, W, H, used_ids, d, i)
+            if not clips:
+                raise RuntimeError("no footage found")
+            pd = left / n
+            for j, c in enumerate(clips):
+                out = d / f"p{i:02d}_{j}.mp4"
+                stock_part(c, pd, W, H, out, (i + j) % 2 == 0)
+                parts.append(out); stock_parts.append(out)
+        clock += dur
         log(f"scene {i + 1}/{len(segs)} done")
     (d / "v.txt").write_text("".join(f"file '{p.name}'\n" for p in parts))
     (d / "a.txt").write_text("".join(f"file '{w.name}'\n" for w, _ in audio))
     run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", d / "v.txt", "-c", "copy", d / "video.mp4"])
     run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", d / "a.txt", "-c", "copy", d / "narration.wav"])
-    add_music(d, sum(x for _, x in audio), 0.11 if short else 0.07)
+    T = sum(x for _, x in audio)
+    add_music(d, T, CFG.get("music_volume_short", 0.13) if short else CFG.get("music_volume_long", 0.09))
     make_ass(segs, audio, W, H, short, d / "subs.ass", script.get("hook_text", "") if short else "")
+    fdir = graphics.fonts_dir()
+    subs = f"ass={d / 'subs.ass'}:fontsdir={fdir}"
     final = d / "final.mp4"
     if short:
         # animated like + subscribe button in the last seconds, with a "tap" and a click sound
         a_png, b_png, tap_png = cta_pngs(d, W)
-        T = sum(x for _, x in audio)
         t0, t1 = max(1.0, T - 4.5), max(1.5, T - 2.6)
         y = int(H * 0.16)
-        fc = (f"[0:v]ass={d / 'subs.ass'}[v0];"
+        fc = (f"[0:v]{subs}[v0];"
               f"[2:v]format=rgba[ca];[3:v]format=rgba[cb];[4:v]format=rgba[tp];"
               f"[v0][ca]overlay=x=60:y='{y}+max(0,({t0}+0.25-t))*600':enable='between(t,{t0},{t1})'[v1];"
               f"[v1][cb]overlay=x=60:y={y}:enable='gte(t,{t1})'[v2];"
@@ -641,37 +816,37 @@ def render(kind, script, d):
              "-c:v", "libx264", "-preset", "veryfast", "-crf", "21", "-pix_fmt", "yuv420p",
              "-c:a", "aac", "-b:a", "160k", "-t", f"{T:.2f}", "-movflags", "+faststart", str(final)])
     else:
-        run(["ffmpeg", "-y", "-i", str(d / "video.mp4"), "-i", str(d / "audio.wav"), "-vf", f"ass={d / 'subs.ass'}",
+        run(["ffmpeg", "-y", "-i", str(d / "video.mp4"), "-i", str(d / "audio.wav"), "-vf", subs,
              "-c:v", "libx264", "-preset", "veryfast", "-crf", "21", "-pix_fmt", "yuv420p",
              "-c:a", "aac", "-b:a", "160k", "-shortest", "-movflags", "+faststart", str(final)])
     log(f"rendered {final} ({duration(final):.1f}s)")
+    script["_chapters"] = chapters
+    script["_stock_parts"] = [str(p) for p in stock_parts]
     return final
 
 
 def add_music(d, T, vol):
-    """Soft, original background pad (generated, so no copyright issues) mixed under the narration."""
-    progs = [[(220, 261.63, 329.63), (174.61, 220, 261.63), (130.81, 164.81, 196), (196, 246.94, 293.66)],
-             [(146.83, 174.61, 220), (116.54, 146.83, 174.61), (174.61, 220, 261.63), (130.81, 164.81, 196)]]
-    chords = random.choice(progs)
-    ins, parts = [], []
-    for k, (f1, f2, f3) in enumerate(chords):
-        expr = (f"(0.22*sin(2*PI*{f1}*t)+0.18*sin(2*PI*{f2}*t)+0.16*sin(2*PI*{f3}*t)+0.14*sin(2*PI*{f1 / 2}*t))"
-                f"*(0.85+0.15*sin(2*PI*0.25*t))")
-        ins += ["-f", "lavfi", "-i", f"aevalsrc='{expr}':s=44100:d=4"]
-        parts.append(f"[{k}:a]afade=t=in:d=1.2,afade=t=out:st=2.6:d=1.4[c{k}]")
-    fc = ";".join(parts) + ";" + "".join(f"[c{k}]" for k in range(4)) + "concat=n=4:v=0:a=1,aformat=channel_layouts=stereo[m]"
-    run(["ffmpeg", "-y", *ins, "-filter_complex", fc, "-map", "[m]", str(d / "pad.wav")])
+    """Original generated soundtrack (new key/tempo/progression every video) ducked under the narration."""
+    try:
+        music.make_loop(d / "pad.wav", seed=random.randint(0, 10 ** 6))
+    except Exception as e:
+        log("music generator failed, using simple pad:", str(e)[:150])
+        run(["ffmpeg", "-y", "-f", "lavfi", "-i", "aevalsrc='0.2*sin(2*PI*110*t)+0.15*sin(2*PI*164.8*t)':s=44100:d=8",
+             str(d / "pad.wav")])
     run(["ffmpeg", "-y", "-i", str(d / "narration.wav"), "-stream_loop", "-1", "-i", str(d / "pad.wav"),
-         "-filter_complex", f"[1:a]lowpass=f=1400,aecho=0.8:0.6:90|160:0.25|0.15,volume={vol}[bg];"
-                            f"[0:a][bg]amix=inputs=2:duration=first:normalize=0[a]",
+         "-filter_complex",
+         f"[1:a]aresample=44100,aformat=channel_layouts=stereo,volume={vol},"
+         f"afade=t=in:d=1.5,afade=t=out:st={max(0.0, T - 2.5):.2f}:d=2.5[bg];"
+         f"[0:a]asplit=2[n1][n2];"
+         f"[bg][n1]sidechaincompress=threshold=0.05:ratio=4:attack=20:release=400[duck];"
+         f"[n2][duck]amix=inputs=2:duration=first:normalize=0[a]",
          "-map", "[a]", "-t", f"{T:.2f}", "-ar", "44100", "-ac", "2", str(d / "audio.wav")])
 
 
 def cta_pngs(d, W):
     """Draw the animated like/subscribe call-to-action: state A (before tap) and state B (after tap)."""
     from PIL import Image, ImageDraw, ImageFont
-    font_path = run(["fc-match", "-f", "%{file}", "DejaVu Sans:bold"]).strip()
-    f = ImageFont.truetype(font_path, 58)
+    f = graphics.font("heavy", 56)
 
     def thumb(dr, x, y, s, col):  # simple thumbs-up icon
         dr.rounded_rectangle([x, y + 0.42 * s, x + 0.22 * s, y + s], radius=int(0.05 * s), fill=col)
@@ -686,11 +861,11 @@ def cta_pngs(d, W):
         lw = 400
         dr.rounded_rectangle([0, 0, lw, 170], radius=85, fill=(6, 95, 212, 255) if liked else (255, 255, 255, 235))
         thumb(dr, 45, 38, 90, (255, 255, 255, 255) if liked else (20, 20, 20, 255))
-        dr.text((160, 52), "LIKED" if liked else "LIKE", font=f, fill=(255, 255, 255) if liked else (20, 20, 20))
+        dr.text((160, 48), "LIKED" if liked else "LIKE", font=f, fill=(255, 255, 255) if liked else (20, 20, 20))
         x2 = lw + 30
         dr.rounded_rectangle([x2, 0, W - 120, 170], radius=85,
                              fill=(90, 90, 90, 245) if liked else (230, 0, 18, 255))
-        dr.text((x2 + 45, 52), "SUBSCRIBED \u2713" if liked else "SUBSCRIBE", font=f, fill=(255, 255, 255))
+        dr.text((x2 + 45, 48), "SUBSCRIBED" if liked else "SUBSCRIBE", font=f, fill=(255, 255, 255))
         pth = d / f"cta_{int(liked)}.png"
         img.save(pth)
         out.append(pth)
@@ -704,39 +879,58 @@ def cta_pngs(d, W):
     return out + [tp]
 
 
-def thumbnail(video, title, d):
-    from PIL import Image, ImageDraw, ImageEnhance, ImageFont
+def thumbnail(script, d):
+    """Branded thumbnail from the most vivid stock frame + 2-4 bold words."""
     frame = d / "frame.jpg"
-    run(["ffmpeg", "-y", "-ss", "4", "-i", video, "-frames:v", "1", "-vf", "scale=1280:720", frame])
-    img = ImageEnhance.Brightness(Image.open(frame).convert("RGB")).enhance(0.55)
-    font_path = run(["fc-match", "-f", "%{file}", "DejaVu Sans:bold"]).strip()
-    words = re.sub(r"#\w+", "", title).upper().split()
-    text = " ".join(words[:7])
-    dr = ImageDraw.Draw(img)
-    for size in range(120, 40, -6):
-        font = ImageFont.truetype(font_path, size)
-        lines, cur = [], ""
-        for w in text.split():
-            test = (cur + " " + w).strip()
-            if dr.textlength(test, font=font) <= 1160:
-                cur = test
-            else:
-                lines.append(cur); cur = w
-        lines.append(cur)
-        if len(lines) <= 3:
-            break
-    y = 720 - 60 - len(lines) * (size + 10)
-    for k, ln in enumerate(lines):
-        dr.text((60, y), ln, font=font, fill=(255, 214, 0) if k == 0 else (255, 255, 255),
-                stroke_width=6, stroke_fill=(0, 0, 0))
-        y += size + 10
+    cands = script.get("_stock_parts") or [str(d / "video.mp4")]
+    best, best_score = None, -1
+    from PIL import Image, ImageStat
+    for k, p in enumerate(cands[:12]):
+        f = d / f"fr{k}.jpg"
+        try:
+            run(["ffmpeg", "-y", "-ss", "1", "-i", p, "-frames:v", "1", "-vf", "scale=1280:-2", f])
+            st = ImageStat.Stat(Image.open(f).convert("HSV"))
+            score = st.mean[1] * 0.6 + st.stddev[2] * 1.0 + min(st.mean[2], 150) * 0.3  # colourful, contrasty, not dark
+            if score > best_score:
+                best, best_score = f, score
+        except Exception:
+            continue
+    if best is None:
+        run(["ffmpeg", "-y", "-ss", "4", "-i", str(d / "video.mp4"), "-frames:v", "1", "-vf", "scale=1280:720", frame])
+        best = frame
+    text = script.get("thumb_text") or re.sub(r"#\w+", "", script["title"])
     out = d / "thumb.jpg"
-    img.save(out, quality=90)
+    thumbs.make_thumbnail(best, text, out, BRAND, script.get("thumb_accent"), script.get("thumb_badge") or None)
     return out
 
 
+# ---------------------------------------------------------------- description
+def build_description(script, kind, state, topic):
+    parts = [script.get("description", "")]
+    if kind == "short" and topic.get("teaser_of"):
+        parts.insert(0, f"Full documentary: https://youtu.be/{topic['teaser_of']['id']}")
+    chs = script.get("_chapters") or []
+    if kind == "long" and chs:
+        # YouTube chapters need: first at 0:00, at least 3, each at least 10 seconds long
+        marks = [(0.0, "Intro")] + [(t, c) for t, c in chs if t >= 10]
+        good = [marks[0]]
+        for t, c in marks[1:]:
+            if t - good[-1][0] >= 10:
+                good.append((t, c))
+        if len(good) >= 3:
+            parts.append("Chapters:\n" + "\n".join(f"{int(t // 60)}:{int(t % 60):02d} {c}" for t, c in good))
+    if kind == "long":
+        prev = [u for u in state.get("uploads", []) if u.get("kind") == "long" and u.get("id")][-3:]
+        if prev:
+            parts.append("Watch next:\n" + "\n".join(f"- {u['title']}: https://youtu.be/{u['id']}" for u in reversed(prev)))
+    src = ", ".join(x for x in (topic.get("source_titles") or []) if x) or "Wikipedia"
+    parts.append(f"Sources: Wikipedia ({src}) and public news reports.\nNarration uses an AI voice; "
+                 "research, script and graphics are produced for this channel.")
+    return "\n\n".join(p for p in parts if p)
+
+
 # ---------------------------------------------------------------- upload
-def upload(video, thumb, script, kind):
+def upload(video, thumb, script, kind, desc):
     from google.oauth2.credentials import Credentials
     from googleapiclient.discovery import build
     from googleapiclient.http import MediaFileUpload
@@ -746,12 +940,11 @@ def upload(video, thumb, script, kind):
     hs = []
     for h in script.get("hashtags", []):
         h = "#" + re.sub(r"[^A-Za-z0-9]", "", str(h))
-        if len(h) > 2 and h.lower() not in ("#viral", "#shorts") and h not in hs:
+        if len(h) > 2 and h.lower() not in ("#viral", "#shorts", "#trending", "#fyp") and h not in hs:
             hs.append(h)
-    hs = hs[:3] + (["#Shorts"] if kind == "short" else []) + ["#viral"]
-    desc = (script.get("description", "") + "\n\nSources: Wikipedia and public news reports."
-            "\nNarration uses an AI voice.\n\n" + " ".join(hs))
-    tags = ["viral"] + [t[:30] for t in script.get("tags", []) if t.lower().strip("#") != "viral"][:14]
+    hs = hs[:3] + (["#Shorts"] if kind == "short" else [])
+    desc = desc + "\n\n" + " ".join(hs)
+    tags = [t[:30] for t in script.get("tags", [])][:15]
     body = {"snippet": {"title": script["title"][:100], "description": desc[:4900], "tags": tags,
                         "categoryId": "27", "defaultLanguage": "en", "defaultAudioLanguage": "en"},
             "status": {"privacyStatus": CFG.get("privacy", "public"), "selfDeclaredMadeForKids": False,
@@ -796,13 +989,15 @@ def main():
             log(f"already posted {done} Shorts today -> skipping this slot")
             return
     log("starting", kind, "video")
-    for _ in range(3):
-        topic = pick_topic(kind, state)
+    teaser = teaser_topic(state) if kind == "short" else None
+    for attempt in range(3):
+        topic = teaser if (teaser and attempt == 0) else pick_topic(kind, state)
         script = write_script(kind, topic)
-        script = policy_review(kind, script, topic.get("source") or "")
+        script = policy_review(kind, script, topic.get("_sources_text") or topic.get("source") or "")
         if script:
             break
-        state["used"].append(topic["key"]); save_state(state)  # never retry a rejected topic
+        if topic.get("key"):
+            state["used"].append(topic["key"]); save_state(state)  # never retry a rejected topic
     else:
         raise RuntimeError("no policy-safe topic found this run")
     script = clean_meta(script, kind)
@@ -815,11 +1010,19 @@ def main():
     has_audio = "audio" in run(["ffprobe", "-v", "error", "-show_entries", "stream=codec_type", "-of", "csv=p=0", str(video)])
     if not has_audio or secs < 15 or (kind == "short" and secs > 175) or (kind == "long" and secs < 60):
         raise RuntimeError(f"video failed quality check (length {secs:.0f}s, audio={has_audio})")
-    thumb = thumbnail(d / "video.mp4", script["title"], d) if kind == "long" else None
-    vid = None if no_upload else upload(video, thumb, script, kind)
-    state["used"].append(topic["key"])
+    thumb = thumbnail(script, d) if kind == "long" else None
+    desc = build_description(script, kind, state, topic)
+    (d / "description.txt").write_text(desc, encoding="utf-8")
+    vid = None if no_upload else upload(video, thumb, script, kind, desc)
+    if topic.get("key"):
+        state["used"].append(topic["key"])
+    if topic.get("teaser_of") and topic["teaser_of"].get("id"):
+        state.setdefault("teased", []).append(topic["teaser_of"]["id"])
+        state["teased"] = state["teased"][-50:]
     state["uploads"].append({"kind": kind, "title": script["title"], "id": vid,
-                             "date": time.strftime("%Y-%m-%d %H:%M")})
+                             "date": time.strftime("%Y-%m-%d %H:%M"), "topic": topic.get("topic"),
+                             "wiki": topic.get("wiki_title"),
+                             "graphics": sum(1 for g in script["segments"] if g.get("graphic"))})
     save_state(state)
 
 
