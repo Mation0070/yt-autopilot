@@ -10,7 +10,8 @@
   "Halliburton",
   "Sani Abacha",
   "Jumia",
-  "NNPC"
+  "NNPC",
+  "Glencore"
  ],
  "uploads": [
   {
@@ -81,6 +82,15 @@
    "topic": "Exposed: The $20B Oil Money That Disappeared in 24 Months",
    "wiki": "NNPC",
    "graphics": 2
+  },
+  {
+   "kind": "long",
+   "title": "Exposed: The $61B Global Oil Machine and Its Fatal Trap",
+   "id": "nXLiQulb08k",
+   "date": "2026-11-07 15:09",
+   "topic": "Exposed: The $1.1B Oil Bribery Ring Bribing State Officials",
+   "wiki": "Glencore",
+   "graphics": 8
   }
  ],
  "insights": {
