@@ -9,7 +9,8 @@
   "Palantir",
   "Panama Canal",
   "LVMH",
-  "De Beers"
+  "De Beers",
+  "Qualcomm"
  ],
  "uploads": [
   {
@@ -74,6 +75,15 @@
    "topic": "How Lab Tech Shattered a $100B Diamond Monopoly",
    "wiki": "De Beers",
    "graphics": 3
+  },
+  {
+   "kind": "long",
+   "title": "The $44B Tollbooth That Controls Every Smartphone",
+   "id": "XM8yvOev-Kg",
+   "date": "2026-11-07 14:09",
+   "topic": "The 'No License, No Chips' Tollbooth Dominating Mobile Tech",
+   "wiki": "Qualcomm",
+   "graphics": 6
   }
  ],
  "insights": {
