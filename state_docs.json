@@ -10,7 +10,8 @@
   "Panama Canal",
   "LVMH",
   "De Beers",
-  "Qualcomm"
+  "Qualcomm",
+  "Foxconn"
  ],
  "uploads": [
   {
@@ -92,6 +93,15 @@
    "date": "2026-11-07 15:30",
    "topic": "The 'No License, No Chips' Tollbooth Dominating Mobile Tech",
    "wiki": "Qualcomm",
+   "graphics": 3
+  },
+  {
+   "kind": "short",
+   "title": "Inside Foxconn's iPhone City #Shorts",
+   "id": "z5NBru_03Qs",
+   "date": "2026-11-07 22:39",
+   "topic": "Inside iPhone City: Foxconn's 300,000-Worker Mega-Factory",
+   "wiki": "Foxconn",
    "graphics": 3
   }
  ],
