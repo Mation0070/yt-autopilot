@@ -21,9 +21,9 @@ voice_rate: "+0%"
 privacy: public
 gemini_model: gemini-3.8-flash
 
-long_minutes: 11
-long_words: 1500-1750
-long_segments: 16-22
+long_minutes: 12
+long_words: 1750-1950
+long_segments: 18-24
 source_chars: 20000
 
 news_region: {hl: en-US, gl: US, ceid: "US:en"}
