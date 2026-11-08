@@ -11,7 +11,8 @@
   "Sani Abacha",
   "Jumia",
   "NNPC",
-  "Glencore"
+  "Glencore",
+  "Femi Otedola"
  ],
  "uploads": [
   {
@@ -99,6 +100,15 @@
    "date": "2026-11-07 17:33",
    "topic": "Exposed: The $1.1B Oil Bribery Ring Bribing State Officials",
    "wiki": "Glencore",
+   "graphics": 3
+  },
+  {
+   "kind": "short",
+   "title": "Exposed: The $500K Fuel Bribe Sting #Shorts",
+   "id": "BvUxrVPQOvA",
+   "date": "2026-11-08 11:41",
+   "topic": "Exposed: The $6.8B Nigerian Fuel Sting Operation",
+   "wiki": "Femi Otedola",
    "graphics": 3
   }
  ],
