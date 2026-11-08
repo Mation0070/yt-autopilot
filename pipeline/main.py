@@ -513,7 +513,38 @@ HEADLINES: {news or 'none'}""", temperature=0.2)
     s["segments"] = [g for g in s["segments"] if g.get("narration", "").strip()]
     if kind == "short" and "#shorts" not in s["title"].lower():
         s["title"] = s["title"][:90] + " #Shorts"
+    if kind == "long":
+        s = ensure_length(s, sources)
     t["_sources_text"] = sources
+    return s
+
+
+def ensure_length(s, sources):
+    """Long videos must hit the target length (watch hours are what unlock monetisation).
+    If the AI wrote too little, ask it to deepen the story using more of the sources."""
+    target = str(CFG.get("long_words", "950-1150"))
+    lo = int(re.findall(r"\d+", target)[0])
+    words = sum(len(str(g.get("narration", "")).split()) for g in s.get("segments", []))
+    if words >= lo * 0.9:
+        return s
+    log(f"script too short ({words} words, target {target}) -> expanding")
+    try:
+        longer = gemini(f"""This documentary script is too short: {words} words, but it must be {target} words.
+Expand it to {target} words: deepen every segment with more concrete detail, context, numbers, people and story
+taken from the SOURCES (never invent facts), and add new segments where the story skips ahead. Keep the same title,
+hook, chapters, graphics and JSON structure and keys. Keep it gripping - no padding or repetition.
+Return only the corrected JSON.
+SCRIPT: {json.dumps(s, ensure_ascii=False)}
+SOURCES: {sources}""", temperature=0.5)
+        new_words = sum(len(str(g.get("narration", "")).split()) for g in longer.get("segments", []))
+        if isinstance(longer, dict) and longer.get("segments") and new_words > words:
+            for k in ("title", "description", "tags", "hashtags", "thumb_text", "thumb_accent", "thumb_badge"):
+                longer.setdefault(k, s.get(k))
+            longer["segments"] = [g for g in longer["segments"] if str(g.get("narration", "")).strip()]
+            log(f"expanded to {new_words} words")
+            return longer
+    except Exception as e:
+        log("expansion skipped:", str(e)[:150])
     return s
 
 
