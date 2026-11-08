@@ -12,7 +12,8 @@
   "Jumia",
   "NNPC",
   "Glencore",
-  "Femi Otedola"
+  "Femi Otedola",
+  "Interswitch"
  ],
  "uploads": [
   {
@@ -109,6 +110,15 @@
    "date": "2026-11-08 11:41",
    "topic": "Exposed: The $6.8B Nigerian Fuel Sting Operation",
    "wiki": "Femi Otedola",
+   "graphics": 3
+  },
+  {
+   "kind": "short",
+   "title": "How Interswitch Built Nigeria's Payment Empire #Shorts",
+   "id": "RwyaEZOLdqw",
+   "date": "2026-11-08 17:34",
+   "topic": "Exposed: How $1B Interswitch grabbed 99% of Nigeria's ATM transactions",
+   "wiki": "Interswitch",
    "graphics": 3
   }
  ],
