@@ -123,24 +123,27 @@
   }
  ],
  "insights": {
-  "date": "2026-11-03",
+  "date": "2026-11-08",
   "learnings": [
-   "Include specific, eye-catching figures ($11B, 99%, 48 Hours) in titles to trigger instant curiosity.",
-   "Place emotional high-stakes keywords ('Scam', 'Broke', 'Exposed') within the first 3 words of the title.",
-   "Hook the audience immediately in the first 2 seconds without introductory fluff or greetings.",
-   "Leverage auto-captioning with bold, centered text as most viewers watch Shorts with audio muted.",
-   "Maintain a fast pacing structure with visual or audio cuts every 1.5 to 2.5 seconds to boost retention.",
-   "End Shorts with a seamless loop or a strong curiosity-driven prompt rather than a generic call to subscribe."
+   "Anchor titles to famous names, known brands, or specific national institutions (e.g., Dangote, Gupta Family, NNPC) rather than anonymous corporate entities.",
+   "Retire the repetitive 'Exposed:' hook format, which has caused title blindness and declining click-through rates.",
+   "Structure Shorts scripts for seamless looping; hook viewers in the first 2 seconds with high stakes to target >100% average percentage viewed.",
+   "Focus long-form videos on empire-building biographies and industrial titan profiles, which proved viable on the Dangote upload (44.5% retention).",
+   "Include local currency or concrete figures tied directly to named scandals to provide immediate credibility and curiosity in search feeds.",
+   "Avoid back-to-back uploads on nearly identical oil scam angles within 48 hours to prevent self-cannibalization and audience fatigue."
   ],
   "double_down": [
-   "High-stakes energy and oil industry scandals (e.g., corporate cover-ups, multi-billion dollar frauds).",
-   "Financial collapse stories focusing on how a single event nearly destroyed a national economy.",
-   "Exposés on massive automotive and industrial corruption scandals (e.g., emissions cheats, defective recalls)."
+   "The Eskom energy crisis and the syndicate sabotage scandals in South Africa",
+   "The Dangote Refinery vs. NNPC import cartel battle",
+   "How Markus Jooste pulled off the Steinhoff crash (Africa's Enron)",
+   "The P&ID $11B arbitration case follow-up: how private equity chased Nigerian assets",
+   "Patrice Motsepe: Mining, political ties, and South Africa's black economic empowerment"
   ],
   "avoid": [
-   "Making drastic content pivots based on single-digit view counts and extremely small sample sizes.",
-   "Dry, academic explanations of economic concepts without a clear antagonist, scam, or dramatic narrative.",
-   "Slow-paced video openings that spend more than 3 seconds explaining background history before delivering the payoff."
+   "Generic 'Exposed: The [X] Scam' or 'Exposed: The $X Oil Heist' title structures",
+   "Vague multi-national corporate scandals without a clear African narrative focus (e.g., Halliburton)",
+   "Shorts with flat hooks that take more than 3 seconds to explain the core premise",
+   "Publishing multiple Shorts on identical subject matter within the same 48-hour window"
   ]
  },
  "teased": [
