@@ -12,7 +12,8 @@
   "De Beers",
   "Qualcomm",
   "Foxconn",
-  "Anduril Industries"
+  "Anduril Industries",
+  "Airbus A380"
  ],
  "uploads": [
   {
@@ -113,6 +114,15 @@
    "topic": "The $14B Defense Tech Disruptor",
    "wiki": "Anduril Industries",
    "graphics": 4
+  },
+  {
+   "kind": "short",
+   "title": "The $25 Billion Aviation Gamble #Shorts",
+   "id": "j4fU2FMDbkw",
+   "date": "2026-11-08 22:29",
+   "topic": "The $25 Billion Superjumbo Airplane Disaster",
+   "wiki": "Airbus A380",
+   "graphics": 3
   }
  ],
  "insights": {
