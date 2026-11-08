@@ -11,7 +11,8 @@
   "LVMH",
   "De Beers",
   "Qualcomm",
-  "Foxconn"
+  "Foxconn",
+  "Anduril Industries"
  ],
  "uploads": [
   {
@@ -103,6 +104,15 @@
    "topic": "Inside iPhone City: Foxconn's 300,000-Worker Mega-Factory",
    "wiki": "Foxconn",
    "graphics": 3
+  },
+  {
+   "kind": "short",
+   "title": "The $61B VR Prodigy Disrupting the Pentagon #Shorts",
+   "id": "N808x3_jxro",
+   "date": "2026-11-08 15:37",
+   "topic": "The $14B Defense Tech Disruptor",
+   "wiki": "Anduril Industries",
+   "graphics": 4
   }
  ],
  "insights": {
