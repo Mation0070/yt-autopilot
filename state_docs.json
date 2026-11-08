@@ -126,26 +126,26 @@
   }
  ],
  "insights": {
-  "date": "2026-11-03",
+  "date": "2026-11-08",
   "learnings": [
-   "Hook the viewer within the first 3 seconds using high-stakes numbers or compelling geopolitical maps.",
-   "Include high-impact financial or strategic figures in the title (e.g., '$5 Trillion', 'Monopoly Tech').",
-   "Keep Short titles punchy and place hashtags like #Shorts in the description or tags rather than cluttering the main title.",
-   "Maintain high visual density with fast-paced B-roll, maps, and dynamic text overlays for maximum retention.",
-   "Combine tech, economics, and military strategy to broaden the documentary appeal beyond standard news.",
-   "Add a compelling end-screen CTA or verbal cue to convert passive viewers into subscribers."
+   "Anchor titles with specific, eye-popping dollar figures ($25 Billion, $61B, $5 Trillion) or iconic industrial locations (iPhone City).",
+   "Inject narrative tension into titles (e.g., 'Disrupting the Pentagon', 'Gamble', 'War Deterrent') rather than textbook descriptions.",
+   "Avoid dry, corporate resume titles like 'Palantir: Data Integration and Modern Defense Technology' or 'Arm Holdings: The Architect...'.",
+   "Structure Short hooks around high-stakes curiosity gaps to push retention above 80% (as achieved by the Taiwan Silicon Shield and LVMH shorts).",
+   "Keep Shorts tightly edited to encourage re-watching, leveraging looping dynamics that drove LVMH's 141% retention rate.",
+   "Use high-performing Short topics as direct smoke-tests before scripting full-length documentaries."
   ],
   "double_down": [
-   "ASML's extreme ultraviolet (EUV) monopoly and global tech dependence",
-   "The hidden vulnerability of global undersea internet cables",
-   "TSMC's multi-billion dollar expansion into Arizona and Europe",
-   "China's chokehold on rare earth metal supply chains"
+   "Inside TSMC's $40B Arizona Mega-Fab & The Global Chip War",
+   "The $100 Billion Monopoly Controlling Global Microchip Manufacturing (ASML)",
+   "How Lockheed Martin's Skunk Works Built a Secret $100B Empire",
+   "The $1 Trillion Rare Earth Monopoly Powering Electric Vehicles",
+   "Inside Nvidia's $3 Trillion AI Hardware Empire"
   ],
   "avoid": [
-   "Relying on static text-heavy slides without dynamic movement or voiceover",
-   "Generic academic titles lacking curiosity or high-stakes framing",
-   "Publishing sporadically without testing different thumbnail and hook variations",
-   "Assuming organic reach will trigger without optimizing description tags and keywords"
+   "Abstract or textbook title formulations lacking clear tension (e.g., 'Data Integration and Modern Defense Technology')",
+   "Vague topic hooks without clear brand or geography anchors (e.g., 'The Hidden Tax Inside Every Smartphone')",
+   "Pure long-form uploads without an accompanying Short snippet to drive initial awareness"
   ]
  },
  "teased": [
