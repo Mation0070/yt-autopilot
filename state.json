@@ -13,7 +13,8 @@
   "NNPC",
   "Glencore",
   "Femi Otedola",
-  "Interswitch"
+  "Interswitch",
+  "Flutterwave"
  ],
  "uploads": [
   {
@@ -119,6 +120,15 @@
    "date": "2026-11-08 17:34",
    "topic": "Exposed: How $1B Interswitch grabbed 99% of Nigeria's ATM transactions",
    "wiki": "Interswitch",
+   "graphics": 3
+  },
+  {
+   "kind": "short",
+   "title": "Flutterwave: Inside the $3B African Fintech Battle #Shorts",
+   "id": "OexcrYlHg5s",
+   "date": "2026-11-09 12:05",
+   "topic": "Flutterwave: Africa's $3B Fintech Scandal",
+   "wiki": "Flutterwave",
    "graphics": 3
   }
  ],
