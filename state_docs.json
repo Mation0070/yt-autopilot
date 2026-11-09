@@ -14,7 +14,8 @@
   "Foxconn",
   "Anduril Industries",
   "Airbus A380",
-  "Nvidia"
+  "Nvidia",
+  "ASML"
  ],
  "uploads": [
   {
@@ -141,6 +142,15 @@
    "date": "2026-11-09 15:57",
    "topic": "How Nvidia Built a $3 Trillion AI Hardware Monopoly",
    "wiki": "Nvidia",
+   "graphics": 3
+  },
+  {
+   "kind": "short",
+   "title": "The EUV Machine Controlling Global AI #Shorts",
+   "id": "pc4xGLa_Sd8",
+   "date": "2026-11-09 22:52",
+   "topic": "ASML’s $350 Million Monopoly Machine",
+   "wiki": "ASML",
    "graphics": 3
   }
  ],
