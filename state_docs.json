@@ -13,7 +13,8 @@
   "Qualcomm",
   "Foxconn",
   "Anduril Industries",
-  "Airbus A380"
+  "Airbus A380",
+  "Nvidia"
  ],
  "uploads": [
   {
@@ -123,6 +124,15 @@
    "topic": "The $25 Billion Superjumbo Airplane Disaster",
    "wiki": "Airbus A380",
    "graphics": 3
+  },
+  {
+   "kind": "long",
+   "title": "How Nvidia Built a $5 Trillion AI Empire",
+   "id": "IcTUDh1jrsw",
+   "date": "2026-11-09 14:36",
+   "topic": "How Nvidia Built a $3 Trillion AI Hardware Monopoly",
+   "wiki": "Nvidia",
+   "graphics": 7
   }
  ],
  "insights": {
