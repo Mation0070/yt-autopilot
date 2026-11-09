@@ -123,27 +123,25 @@
   }
  ],
  "insights": {
-  "date": "2026-11-08",
+  "date": "2026-11-09",
   "learnings": [
-   "Anchor titles to famous names, known brands, or specific national institutions (e.g., Dangote, Gupta Family, NNPC) rather than anonymous corporate entities.",
-   "Retire the repetitive 'Exposed:' hook format, which has caused title blindness and declining click-through rates.",
-   "Structure Shorts scripts for seamless looping; hook viewers in the first 2 seconds with high stakes to target >100% average percentage viewed.",
-   "Focus long-form videos on empire-building biographies and industrial titan profiles, which proved viable on the Dangote upload (44.5% retention).",
-   "Include local currency or concrete figures tied directly to named scandals to provide immediate credibility and curiosity in search feeds.",
-   "Avoid back-to-back uploads on nearly identical oil scam angles within 48 hours to prevent self-cannibalization and audience fatigue."
+   "Include specific names, institutions, or countries in titles (e.g., Gupta Family, NNPC, Nigeria, Dangote) instead of vague hooks.",
+   "Avoid overusing repetitive title formulas like starting every video with 'Exposed:'; it causes viewer fatigue and dilutes CTR.",
+   "For Shorts, lean into financial scandals with precise dollar/currency figures (e.g., '$11B Gas Scam', 'R2 Billion') as they drive higher retention.",
+   "Keep Short hooks under 3 seconds by jumping directly into the core event rather than intro context.",
+   "Rebrand the channel name to match the finance, corruption, and African business focus to build audience trust.",
+   "Produce more 3-8 minute long-form documentaries focusing on success stories (like Dangote) as watch time retention is surprisingly solid (44.5%)."
   ],
   "double_down": [
-   "The Eskom energy crisis and the syndicate sabotage scandals in South Africa",
-   "The Dangote Refinery vs. NNPC import cartel battle",
-   "How Markus Jooste pulled off the Steinhoff crash (Africa's Enron)",
-   "The P&ID $11B arbitration case follow-up: how private equity chased Nigerian assets",
-   "Patrice Motsepe: Mining, political ties, and South Africa's black economic empowerment"
+   "South African state capture and banking collapses (Gupta Family, VBS Bank)",
+   "Profiles of prominent African billionaires and industrial empires (Aliko Dangote, Strive Masiyiwa, Mike Adenuga)",
+   "Specific high-stakes national economic stories with exact dollar amounts (Nigerian Naira evolution, NNPC oil revenue)",
+   "African tech unicorn breakdowns (Jumia, Flutterwave, Paystack)"
   ],
   "avoid": [
-   "Generic 'Exposed: The [X] Scam' or 'Exposed: The $X Oil Heist' title structures",
-   "Vague multi-national corporate scandals without a clear African narrative focus (e.g., Halliburton)",
-   "Shorts with flat hooks that take more than 3 seconds to explain the core premise",
-   "Publishing multiple Shorts on identical subject matter within the same 48-hour window"
+   "Generic, repetitive title templates such as starting every title with 'Exposed:'",
+   "Vague titles lacking recognizable entity names (e.g., 'Exposed: The Oil Bribery Scam' or 'Exposed: $5B Looted From Central Bank')",
+   "Short-form titles that sound like generic stock news rather than narrative-driven stories"
   ]
  },
  "teased": [
