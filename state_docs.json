@@ -15,7 +15,8 @@
   "Anduril Industries",
   "Airbus A380",
   "Nvidia",
-  "ASML"
+  "ASML",
+  "Boeing"
  ],
  "uploads": [
   {
@@ -151,6 +152,15 @@
    "date": "2026-11-09 22:52",
    "topic": "ASML’s $350 Million Monopoly Machine",
    "wiki": "ASML",
+   "graphics": 3
+  },
+  {
+   "kind": "short",
+   "title": "The $16 Billion Merger That Changed Boeing Forever #Shorts",
+   "id": "76r8s0UiFtc",
+   "date": "2026-11-10 16:04",
+   "topic": "The $16 Billion Merger That Destroyed Boeing",
+   "wiki": "Boeing",
    "graphics": 3
   }
  ],
