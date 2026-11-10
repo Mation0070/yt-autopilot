@@ -16,7 +16,8 @@
   "Airbus A380",
   "Nvidia",
   "ASML",
-  "Boeing"
+  "Boeing",
+  "Strait of Hormuz"
  ],
  "uploads": [
   {
@@ -162,6 +163,15 @@
    "topic": "The $16 Billion Merger That Destroyed Boeing",
    "wiki": "Boeing",
    "graphics": 3
+  },
+  {
+   "kind": "short",
+   "title": "The 21-Mile Chokepoint Controlling Billions in Oil #Shorts",
+   "id": "U9CrD5StjbM",
+   "date": "2026-11-10 22:38",
+   "topic": "The 21-Mile Chokepoint Controlling $1.2 Trillion in Oil",
+   "wiki": "Strait of Hormuz",
+   "graphics": 2
   }
  ],
  "insights": {
