@@ -17,7 +17,8 @@
   "Flutterwave",
   "Ethiopian Airlines",
   "Olusegun Obasanjo",
-  "Air Peace"
+  "Air Peace",
+  "Strive Masiyiwa"
  ],
  "uploads": [
   {
@@ -168,6 +169,15 @@
    "date": "2026-11-10 18:22",
    "topic": "Air Peace: The $20M US Indictment",
    "wiki": "Air Peace",
+   "graphics": 3
+  },
+  {
+   "kind": "short",
+   "title": "Strive Masiyiwa vs Robert Mugabe #Shorts",
+   "id": "96-8sLMv3WI",
+   "date": "2026-11-11 12:40",
+   "topic": "How Strive Masiyiwa Defeated Robert Mugabe's $500M Telecom Monopoly",
+   "wiki": "Strive Masiyiwa",
    "graphics": 3
   }
  ],
