@@ -18,7 +18,8 @@
   "ASML",
   "Boeing",
   "Strait of Hormuz",
-  "Lockheed Martin F-35 Lightning II"
+  "Lockheed Martin F-35 Lightning II",
+  "CATL"
  ],
  "uploads": [
   {
@@ -181,6 +182,15 @@
    "date": "2026-11-11 22:51",
    "topic": "The $1.7 Trillion Military Machine Empire: Lockheed Martin's F-35",
    "wiki": "Lockheed Martin F-35 Lightning II",
+   "graphics": 3
+  },
+  {
+   "kind": "short",
+   "title": "The Battery Giant Dominating the EV Market #Shorts",
+   "id": "eS4M9V-NIFE",
+   "date": "2026-11-12 16:11",
+   "topic": "CATL's $50 Billion EV Battery Monopoly",
+   "wiki": "CATL",
    "graphics": 3
   }
  ],
