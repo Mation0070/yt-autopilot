@@ -21,7 +21,8 @@
   "Lockheed Martin F-35 Lightning II",
   "CATL",
   "Rare-earth element",
-  "Maersk"
+  "Maersk",
+  "TSMC"
  ],
  "uploads": [
   {
@@ -220,6 +221,15 @@
    "date": "2026-11-13 15:52",
    "topic": "How Maersk’s $30 Billion Supply Chain Empire Controls Global Trade",
    "wiki": "Maersk",
+   "graphics": 3
+  },
+  {
+   "kind": "short",
+   "title": "$12B TSMC Arizona Expansion #Shorts",
+   "id": "k3dgh9AzSGs",
+   "date": "2026-11-13 22:46",
+   "topic": "How TSMC’s $40 Billion Arizona Bet Hit a Cultural Wall",
+   "wiki": "TSMC",
    "graphics": 3
   }
  ],
