@@ -22,7 +22,8 @@
   "Abdul Samad Rabiu",
   "Tony Elumelu",
   "South African Airways",
-  "Patrice Motsepe"
+  "Patrice Motsepe",
+  "Naspers"
  ],
  "uploads": [
   {
@@ -218,6 +219,15 @@
    "date": "2026-11-13 11:59",
    "topic": "How Patrice Motsepe Built a $3 Billion Mining Empire",
    "wiki": "Patrice Motsepe",
+   "graphics": 3
+  },
+  {
+   "kind": "short",
+   "title": "How South Africa's Naspers Made Billions on Tencent #Shorts",
+   "id": "9GL11vvw7SM",
+   "date": "2026-11-13 18:39",
+   "topic": "Naspers: The $200 Billion Tencent Bet",
+   "wiki": "Naspers",
    "graphics": 3
   }
  ],
