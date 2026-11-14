@@ -22,7 +22,8 @@
   "CATL",
   "Rare-earth element",
   "Maersk",
-  "TSMC"
+  "TSMC",
+  "Eli Lilly and Company"
  ],
  "uploads": [
   {
@@ -230,6 +231,15 @@
    "date": "2026-11-13 22:46",
    "topic": "How TSMC’s $40 Billion Arizona Bet Hit a Cultural Wall",
    "wiki": "TSMC",
+   "graphics": 3
+  },
+  {
+   "kind": "short",
+   "title": "Eli Lilly's $1 Trillion Biotech Gold Rush #Shorts",
+   "id": "Wcg1Qg539HI",
+   "date": "2026-11-14 15:37",
+   "topic": "$1 Trillion Biotech Gold Rush",
+   "wiki": "Eli Lilly and Company",
    "graphics": 3
   }
  ],
