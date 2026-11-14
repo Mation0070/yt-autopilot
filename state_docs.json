@@ -23,7 +23,8 @@
   "Rare-earth element",
   "Maersk",
   "TSMC",
-  "Eli Lilly and Company"
+  "Eli Lilly and Company",
+  "Micron Technology"
  ],
  "uploads": [
   {
@@ -240,6 +241,15 @@
    "date": "2026-11-14 15:37",
    "topic": "$1 Trillion Biotech Gold Rush",
    "wiki": "Eli Lilly and Company",
+   "graphics": 3
+  },
+  {
+   "kind": "short",
+   "title": "Micron's $15 Billion Idaho AI Chip Gamble #Shorts",
+   "id": "rye7Aw7eAD0",
+   "date": "2026-11-14 22:57",
+   "topic": "Micron's $15 Billion Idaho Chip Bet",
+   "wiki": "Micron Technology",
    "graphics": 3
   }
  ],
