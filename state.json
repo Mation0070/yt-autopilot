@@ -23,7 +23,8 @@
   "Tony Elumelu",
   "South African Airways",
   "Patrice Motsepe",
-  "Naspers"
+  "Naspers",
+  "Mo Ibrahim"
  ],
  "uploads": [
   {
@@ -228,6 +229,15 @@
    "date": "2026-11-13 18:39",
    "topic": "Naspers: The $200 Billion Tencent Bet",
    "wiki": "Naspers",
+   "graphics": 3
+  },
+  {
+   "kind": "short",
+   "title": "How Mo Ibrahim Sold Celtel for $3.4 Billion #Shorts",
+   "id": "I_IyG73j-tQ",
+   "date": "2026-11-14 11:43",
+   "topic": "How Mo Ibrahim Sold Celtel for $3.4 Billion",
+   "wiki": "Mo Ibrahim",
    "graphics": 3
   }
  ],
