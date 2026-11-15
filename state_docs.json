@@ -24,7 +24,8 @@
   "Maersk",
   "TSMC",
   "Eli Lilly and Company",
-  "Micron Technology"
+  "Micron Technology",
+  "BlackRock"
  ],
  "uploads": [
   {
@@ -251,6 +252,15 @@
    "topic": "Micron's $15 Billion Idaho Chip Bet",
    "wiki": "Micron Technology",
    "graphics": 3
+  },
+  {
+   "kind": "long",
+   "title": "$15.3 Trillion Leviathan: How BlackRock Controls World Capital",
+   "id": "4yf08DeKLLo",
+   "date": "2026-11-15 14:19",
+   "topic": "$10 Trillion Leviathan: The BlackRock System Controlling Modern Capital",
+   "wiki": "BlackRock",
+   "graphics": 12
   }
  ],
  "insights": {
