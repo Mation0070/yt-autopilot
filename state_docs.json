@@ -25,7 +25,8 @@
   "TSMC",
   "Eli Lilly and Company",
   "Micron Technology",
-  "BlackRock"
+  "BlackRock",
+  "Saudi Aramco"
  ],
  "uploads": [
   {
@@ -269,6 +270,15 @@
    "date": "2026-11-15 15:46",
    "topic": "$10 Trillion Leviathan: The BlackRock System Controlling Modern Capital",
    "wiki": "BlackRock",
+   "graphics": 2
+  },
+  {
+   "kind": "short",
+   "title": "Beyond Crude Oil: Aramco's Massive Gas Empire #Shorts",
+   "id": "BuUTbqzWUd0",
+   "date": "2026-11-15 22:43",
+   "topic": "$100 Billion Pivot: Saudi Aramco's Secret Gas Megaproject",
+   "wiki": "Saudi Aramco",
    "graphics": 2
   }
  ],
