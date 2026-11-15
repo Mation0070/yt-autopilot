@@ -26,7 +26,8 @@
   "Naspers",
   "Mo Ibrahim",
   "Oando",
-  "Herbert Wigwe"
+  "Herbert Wigwe",
+  "Paystack"
  ],
  "uploads": [
   {
@@ -259,6 +260,15 @@
    "topic": "Herbert Wigwe and Access Bank's Hostile $20B Expansion",
    "wiki": "Herbert Wigwe",
    "graphics": 3
+  },
+  {
+   "kind": "long",
+   "title": "How Stripe Bought Paystack: The $200M Nigerian Tech Deal",
+   "id": "az6dMGkBl78",
+   "date": "2026-11-15 15:57",
+   "topic": "The $200M Paystack Exit: How Two Engineers Sold to Stripe",
+   "wiki": "Paystack",
+   "graphics": 10
   }
  ],
  "insights": {
