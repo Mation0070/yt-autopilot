@@ -27,7 +27,8 @@
   "Mo Ibrahim",
   "Oando",
   "Herbert Wigwe",
-  "Paystack"
+  "Paystack",
+  "Opay"
  ],
  "uploads": [
   {
@@ -277,6 +278,15 @@
    "date": "2026-11-15 17:35",
    "topic": "The $200M Paystack Exit: How Two Engineers Sold to Stripe",
    "wiki": "Paystack",
+   "graphics": 3
+  },
+  {
+   "kind": "short",
+   "title": "The $4B OPay Story #Shorts",
+   "id": "xGJK92Vp9PU",
+   "date": "2026-11-16 12:08",
+   "topic": "Zhou Yahui and the $2B OPay Pivot",
+   "wiki": "Opay",
    "graphics": 3
   }
  ],
