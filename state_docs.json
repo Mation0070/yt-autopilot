@@ -26,7 +26,8 @@
   "Eli Lilly and Company",
   "Micron Technology",
   "BlackRock",
-  "Saudi Aramco"
+  "Saudi Aramco",
+  "Nord Stream"
  ],
  "uploads": [
   {
@@ -280,6 +281,15 @@
    "topic": "$100 Billion Pivot: Saudi Aramco's Secret Gas Megaproject",
    "wiki": "Saudi Aramco",
    "graphics": 2
+  },
+  {
+   "kind": "short",
+   "title": "The Deep-Sea Sabotage Trap #Shorts",
+   "id": "nyX5LRfHuNY",
+   "date": "2026-11-16 16:50",
+   "topic": "The $11 Billion Deep-Sea Sabotage",
+   "wiki": "Nord Stream",
+   "graphics": 3
   }
  ],
  "insights": {
