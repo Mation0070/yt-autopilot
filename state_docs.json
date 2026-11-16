@@ -283,25 +283,24 @@
   }
  ],
  "insights": {
-  "date": "2026-11-09",
+  "date": "2026-11-16",
   "learnings": [
-   "Lead titles with specific, eye-catching dollar values ($25 Billion, $61B, $5 Trillion) to create instant intrigue.",
-   "Focus topics on high-stakes industrial power, defense technology, supply chain control, and corporate monopolies.",
-   "Structure Shorts scripts for continuous loops or rapid payoff to push retention past 70-100%.",
-   "Use strong entity names (Foxconn, Taiwan, Pentagon, SpaceX) early in the video and title rather than abstract concepts.",
-   "Avoid passive titles like 'The Hidden Tax' or vague tech summaries; frame stories around conflict, disruption, or gambles.",
-   "Keep using Shorts to feed long-form topic validation until subscriber counts provide a baseline for long-form impressions."
+   "Lead Short titles with specific dollar amounts ($B/$T) combined with high-stakes tension words ('Gamble', 'Trap', 'Chokepoint').",
+   "Focus topic selection on defense technology, geopolitical bottlenecks, and semiconductor wars over standard corporate histories.",
+   "Aim for 45-second Shorts if visual pacing can sustain >70% retention, as these trigger YouTube's feed far better than 25-second clips.",
+   "Eliminate dry, academic titles like 'Data Integration and Modern Defense Technology' in favor of dramatic story hooks.",
+   "Front-load the first 10 seconds of long-form videos with intense narrative stakes to fix low early retention (currently averaging under 38%).",
+   "Acknowledge data noise: rely on view-through rate and retention metrics rather than raw sub count when testing new sub-niches."
   ],
   "double_down": [
-   "High-dollar aviation, chip war, and defense supply chain mini-docs",
-   "Inside secret mega-factories and supply hubs (e.g., TSMC mega-fabs, defense shipyards)",
-   "Geopolitical tech struggles (e.g., subsea internet cables, rare earth monopolies)",
-   "Controversial corporate disruptions and mega-mergers with high financial stakes"
+   "Semiconductor supply chain battles (e.g., ASML lithography monopolies, TSMC mega-fab bets).",
+   "Defense mega-projects and military resource chokepoints (e.g., rare earth monopolies, military aviation overspending).",
+   "Strategic maritime and infrastructure bottlenecks (e.g., Strait of Hormuz oil routes, subsea internet cable security)."
   ],
   "avoid": [
-   "Abstract titles lacking concrete numbers, brand names, or urgent conflicts",
-   "Relying solely on long-form formats for growth before establishing a core Shorts audience",
-   "Slow-burn script hooks that yield sub-30% retention in the first 15 seconds"
+   "Consumer luxury, retail, and commodities stories without geopolitical conflict (e.g., LVMH empire, diamond monopoly, Yiwu wholesale market).",
+   "Dry, descriptive title formats lacking strong narrative tension or clear stakes.",
+   "Releasing long-form content without repurposing proven Short hooks into compelling long-form intros."
   ]
  },
  "teased": [
