@@ -281,25 +281,25 @@
   }
  ],
  "insights": {
-  "date": "2026-11-09",
+  "date": "2026-11-16",
   "learnings": [
-   "Include specific names, institutions, or countries in titles (e.g., Gupta Family, NNPC, Nigeria, Dangote) instead of vague hooks.",
-   "Avoid overusing repetitive title formulas like starting every video with 'Exposed:'; it causes viewer fatigue and dilutes CTR.",
-   "For Shorts, lean into financial scandals with precise dollar/currency figures (e.g., '$11B Gas Scam', 'R2 Billion') as they drive higher retention.",
-   "Keep Short hooks under 3 seconds by jumping directly into the core event rather than intro context.",
-   "Rebrand the channel name to match the finance, corruption, and African business focus to build audience trust.",
-   "Produce more 3-8 minute long-form documentaries focusing on success stories (like Dangote) as watch time retention is surprisingly solid (44.5%)."
+   "Feature recognizable names or major brands in the title and thumbnail (e.g., Motsepe, Obasanjo, Ethiopian Airlines) instead of generic terms like 'Oil Machine' or 'Bribery Scam'.",
+   "Use specific dollar amounts ($3.7B, $11B) and clear conflict frames ('Strive Masiyiwa vs Robert Mugabe') in Short hooks to push retention past 100%.",
+   "Ensure long-form video hooks immediately present the core story within the first 15 seconds to prevent steep early drop-off.",
+   "Use high-performing Short topics as proof-of-concept tests before committing resources to long-form deep dives.",
+   "Avoid standalone 'Exposed:' titles unless paired with a household brand name or well-known public figure.",
+   "Maintain tight pacing in the first 60 seconds of long-form videos, as videos dropping below 10% retention suffer from weak intro hooks."
   ],
   "double_down": [
-   "South African state capture and banking collapses (Gupta Family, VBS Bank)",
-   "Profiles of prominent African billionaires and industrial empires (Aliko Dangote, Strive Masiyiwa, Mike Adenuga)",
-   "Specific high-stakes national economic stories with exact dollar amounts (Nigerian Naira evolution, NNPC oil revenue)",
-   "African tech unicorn breakdowns (Jumia, Flutterwave, Paystack)"
+   "Billionaire empire origin and strategy stories (e.g., Johann Rupert, Aliko Dangote's Refinery, Abdulsamad Rabiu/BUA Group)",
+   "Political vs. Business battles in Africa (e.g., Econet vs Zimbabwean government, South African state capture deep dives)",
+   "African tech unicorn acquisition and founder sagas featuring named founders (e.g., Paystack, Flutterwave, Moniepoint)",
+   "Pan-African infrastructure and airline success/crisis stories (e.g., Ethiopian Airlines expansion strategy, RwandAir)"
   ],
   "avoid": [
-   "Generic, repetitive title templates such as starting every title with 'Exposed:'",
-   "Vague titles lacking recognizable entity names (e.g., 'Exposed: The Oil Bribery Scam' or 'Exposed: $5B Looted From Central Bank')",
-   "Short-form titles that sound like generic stock news rather than narrative-driven stories"
+   "Generic scandal titles lacking named figures or brands (e.g., 'Exposed: The Oil Bribery Scam', 'Global Oil Machine')",
+   "Broad macro-economic evolution videos without a central protagonist",
+   "Slow-paced long-form intros that result in single-digit retention percentages"
   ]
  },
  "teased": [
