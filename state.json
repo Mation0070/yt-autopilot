@@ -29,7 +29,8 @@
   "Herbert Wigwe",
   "Paystack",
   "Opay",
-  "Johann Rupert"
+  "Johann Rupert",
+  "MTN Group"
  ],
  "uploads": [
   {
@@ -298,6 +299,15 @@
    "topic": "Johann Rupert: Africa’s Luxury King",
    "wiki": "Johann Rupert",
    "graphics": 2
+  },
+  {
+   "kind": "short",
+   "title": "How a $5.2B Fine Broke MTN Group #Shorts",
+   "id": "4O-hZVAnqbk",
+   "date": "2026-11-17 12:09",
+   "topic": "MTN Group's Record $5.2B Fine",
+   "wiki": "MTN Group",
+   "graphics": 3
   }
  ],
  "insights": {
