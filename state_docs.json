@@ -28,7 +28,8 @@
   "BlackRock",
   "Saudi Aramco",
   "Nord Stream",
-  "BAE Systems"
+  "BAE Systems",
+  "Applied Materials"
  ],
  "uploads": [
   {
@@ -300,6 +301,15 @@
    "topic": "The $40B British Titan Behind US Air Dominance",
    "wiki": "BAE Systems",
    "graphics": 2
+  },
+  {
+   "kind": "long",
+   "title": "The $23 Billion Chip Powerhouse Behind Every AI Processor",
+   "id": "cR5Cl0yRUjU",
+   "date": "2026-11-17 14:55",
+   "topic": "The Secret $25 Billion Chip Equipment Monopolist",
+   "wiki": "Applied Materials",
+   "graphics": 10
   }
  ],
  "insights": {
