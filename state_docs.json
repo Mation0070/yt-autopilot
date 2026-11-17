@@ -29,7 +29,8 @@
   "Saudi Aramco",
   "Nord Stream",
   "BAE Systems",
-  "Applied Materials"
+  "Applied Materials",
+  "SK Hynix"
  ],
  "uploads": [
   {
@@ -319,6 +320,15 @@
    "topic": "The Secret $25 Billion Chip Equipment Monopolist",
    "wiki": "Applied Materials",
    "graphics": 3
+  },
+  {
+   "kind": "short",
+   "title": "The $100 Billion AI Memory Gamble #Shorts",
+   "id": "r2p0LmxLZ88",
+   "date": "2026-11-17 23:14",
+   "topic": "The $100 Billion AI Memory War",
+   "wiki": "SK Hynix",
+   "graphics": 2
   }
  ],
  "insights": {
