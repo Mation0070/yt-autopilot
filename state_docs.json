@@ -31,7 +31,8 @@
   "BAE Systems",
   "Applied Materials",
   "SK Hynix",
-  "GlobalFoundries"
+  "GlobalFoundries",
+  "Hypersonic weapon"
  ],
  "uploads": [
   {
@@ -338,6 +339,15 @@
    "date": "2026-11-18 16:07",
    "topic": "The $12B Security Trap: GlobalFoundries",
    "wiki": "GlobalFoundries",
+   "graphics": 3
+  },
+  {
+   "kind": "short",
+   "title": "The $100B Missile Trap America Can’t Block #Shorts",
+   "id": "kEH91sNrj8E",
+   "date": "2026-11-18 23:04",
+   "topic": "The $100B Missile Trap America Can’t Block",
+   "wiki": "Hypersonic weapon",
    "graphics": 3
   }
  ],
