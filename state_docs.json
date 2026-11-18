@@ -30,7 +30,8 @@
   "Nord Stream",
   "BAE Systems",
   "Applied Materials",
-  "SK Hynix"
+  "SK Hynix",
+  "GlobalFoundries"
  ],
  "uploads": [
   {
@@ -329,6 +330,15 @@
    "topic": "The $100 Billion AI Memory War",
    "wiki": "SK Hynix",
    "graphics": 2
+  },
+  {
+   "kind": "short",
+   "title": "The US Military’s $12B Semiconductor Paradox #Shorts",
+   "id": "vMIxaRFQF0w",
+   "date": "2026-11-18 16:07",
+   "topic": "The $12B Security Trap: GlobalFoundries",
+   "wiki": "GlobalFoundries",
+   "graphics": 3
   }
  ],
  "insights": {
