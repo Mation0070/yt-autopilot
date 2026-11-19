@@ -32,7 +32,8 @@
   "Applied Materials",
   "SK Hynix",
   "GlobalFoundries",
-  "Hypersonic weapon"
+  "Hypersonic weapon",
+  "Synopsys"
  ],
  "uploads": [
   {
@@ -349,6 +350,15 @@
    "topic": "The $100B Missile Trap America Can’t Block",
    "wiki": "Hypersonic weapon",
    "graphics": 3
+  },
+  {
+   "kind": "long",
+   "title": "The Hidden Software Chokepoint Behind Every Chip",
+   "id": "w3nH3diz01A",
+   "date": "2026-11-19 15:18",
+   "topic": "The $500 Billion Software Chokepoint Behind All Chips",
+   "wiki": "Synopsys",
+   "graphics": 7
   }
  ],
  "insights": {
