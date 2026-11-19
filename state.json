@@ -34,7 +34,8 @@
   "Hassanal Bolkiah",
   "Orji Uzor Kalu",
   "Folorunso Alakija",
-  "RwandAir"
+  "RwandAir",
+  "Sasol"
  ],
  "uploads": [
   {
@@ -348,6 +349,15 @@
    "topic": "RwandAir: Paul Kagame's $1B Aviation Gamble",
    "wiki": "RwandAir",
    "graphics": 3
+  },
+  {
+   "kind": "short",
+   "title": "Sasol’s $13 Billion Lake Charles Project: A Financial Challenge",
+   "id": "RXWci0ZTPuQ",
+   "date": "2026-11-19 18:32",
+   "topic": "Sasol’s $13B American Disaster",
+   "wiki": "Sasol",
+   "graphics": 2
   }
  ],
  "insights": {
