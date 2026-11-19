@@ -33,7 +33,8 @@
   "SK Hynix",
   "GlobalFoundries",
   "Hypersonic weapon",
-  "Synopsys"
+  "Synopsys",
+  "Bab al-Mandab Strait"
  ],
  "uploads": [
   {
@@ -367,6 +368,15 @@
    "date": "2026-11-19 16:13",
    "topic": "The $500 Billion Software Chokepoint Behind All Chips",
    "wiki": "Synopsys",
+   "graphics": 3
+  },
+  {
+   "kind": "short",
+   "title": "The $1T Bab-el-Mandeb Shipping Trap #Shorts",
+   "id": "G85vfijcxdY",
+   "date": "2026-11-19 22:48",
+   "topic": "$1T Shipping Trap: The 16-Mile Bab-el-Mandeb Chokepoint",
+   "wiki": "Bab al-Mandab Strait",
    "graphics": 3
   }
  ],
