@@ -34,7 +34,8 @@
   "GlobalFoundries",
   "Hypersonic weapon",
   "Synopsys",
-  "Bab al-Mandab Strait"
+  "Bab al-Mandab Strait",
+  "Iron Dome"
  ],
  "uploads": [
   {
@@ -377,6 +378,15 @@
    "date": "2026-11-19 22:48",
    "topic": "$1T Shipping Trap: The 16-Mile Bab-el-Mandeb Chokepoint",
    "wiki": "Bab al-Mandab Strait",
+   "graphics": 3
+  },
+  {
+   "kind": "short",
+   "title": "The $3 Billion Iron Dome Trap #Shorts",
+   "id": "sFjatlN7dKE",
+   "date": "2026-11-20 16:00",
+   "topic": "The $3 Billion Iron Dome Financial Asymmetry Trap",
+   "wiki": "Iron Dome",
    "graphics": 3
   }
  ],
