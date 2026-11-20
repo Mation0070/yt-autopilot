@@ -35,7 +35,8 @@
   "Hypersonic weapon",
   "Synopsys",
   "Bab al-Mandab Strait",
-  "Iron Dome"
+  "Iron Dome",
+  "Strait of Malacca"
  ],
  "uploads": [
   {
@@ -387,6 +388,15 @@
    "date": "2026-11-20 16:00",
    "topic": "The $3 Billion Iron Dome Financial Asymmetry Trap",
    "wiki": "Iron Dome",
+   "graphics": 3
+  },
+  {
+   "kind": "short",
+   "title": "The $19.5T China Energy Chokepoint Trap #Shorts",
+   "id": "vtR4BAr2VNE",
+   "date": "2026-11-20 22:40",
+   "topic": "The $5 Trillion Malacca Chokepoint Trap",
+   "wiki": "Strait of Malacca",
    "graphics": 3
   }
  ],
