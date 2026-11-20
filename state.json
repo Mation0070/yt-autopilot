@@ -36,7 +36,8 @@
   "Folorunso Alakija",
   "RwandAir",
   "Sasol",
-  "MultiChoice"
+  "MultiChoice",
+  "Andela"
  ],
  "uploads": [
   {
@@ -368,6 +369,15 @@
    "topic": "MultiChoice: $4.4B Tax Battle & French Buyout",
    "wiki": "MultiChoice",
    "graphics": 2
+  },
+  {
+   "kind": "short",
+   "title": "The $1.5B African Tech Bet Backed by Mark Zuckerberg #Shorts",
+   "id": "vdLLzQGyp0w",
+   "date": "2026-11-20 18:24",
+   "topic": "Andela: The $1.5B African Tech Factory",
+   "wiki": "Andela",
+   "graphics": 3
   }
  ],
  "insights": {
