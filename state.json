@@ -35,7 +35,8 @@
   "Orji Uzor Kalu",
   "Folorunso Alakija",
   "RwandAir",
-  "Sasol"
+  "Sasol",
+  "MultiChoice"
  ],
  "uploads": [
   {
@@ -357,6 +358,15 @@
    "date": "2026-11-19 18:32",
    "topic": "Sasol’s $13B American Disaster",
    "wiki": "Sasol",
+   "graphics": 2
+  },
+  {
+   "kind": "short",
+   "title": "MultiChoice: The $2B African Media Battle #Shorts",
+   "id": "JAmyoFQi2WU",
+   "date": "2026-11-20 12:06",
+   "topic": "MultiChoice: $4.4B Tax Battle & French Buyout",
+   "wiki": "MultiChoice",
    "graphics": 2
   }
  ],
