@@ -36,7 +36,8 @@
   "Synopsys",
   "Bab al-Mandab Strait",
   "Iron Dome",
-  "Strait of Malacca"
+  "Strait of Malacca",
+  "Virginia-class submarine"
  ],
  "uploads": [
   {
@@ -398,6 +399,15 @@
    "topic": "The $5 Trillion Malacca Chokepoint Trap",
    "wiki": "Strait of Malacca",
    "graphics": 3
+  },
+  {
+   "kind": "long",
+   "title": "The Industrial Bottleneck Crippling US Submarine Power",
+   "id": "mw4Tk5iCQ0Y",
+   "date": "2026-11-21 14:06",
+   "topic": "The $115 Billion Nuclear Submarine Supply Bottleneck",
+   "wiki": "Virginia-class submarine",
+   "graphics": 8
   }
  ],
  "insights": {
