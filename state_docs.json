@@ -37,7 +37,8 @@
   "Bab al-Mandab Strait",
   "Iron Dome",
   "Strait of Malacca",
-  "Virginia-class submarine"
+  "Virginia-class submarine",
+  "Rosatom"
  ],
  "uploads": [
   {
@@ -416,6 +417,15 @@
    "date": "2026-11-21 15:57",
    "topic": "The $115 Billion Nuclear Submarine Supply Bottleneck",
    "wiki": "Virginia-class submarine",
+   "graphics": 3
+  },
+  {
+   "kind": "short",
+   "title": "The $250B Russian Nuclear Trap #Shorts",
+   "id": "LdnGOhkOfPA",
+   "date": "2026-11-21 22:33",
+   "topic": "The $500B Nuclear Trap: Why the West Cannot Ban Russian Uranium",
+   "wiki": "Rosatom",
    "graphics": 3
   }
  ],
