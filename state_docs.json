@@ -38,7 +38,8 @@
   "Iron Dome",
   "Strait of Malacca",
   "Virginia-class submarine",
-  "Rosatom"
+  "Rosatom",
+  "Gallium"
  ],
  "uploads": [
   {
@@ -426,6 +427,15 @@
    "date": "2026-11-21 22:33",
    "topic": "The $500B Nuclear Trap: Why the West Cannot Ban Russian Uranium",
    "wiki": "Rosatom",
+   "graphics": 3
+  },
+  {
+   "kind": "short",
+   "title": "The Bizarre Melting Metal Powering Military Radar #Shorts",
+   "id": "wUpX4YNbfso",
+   "date": "2026-11-22 15:55",
+   "topic": "The $0 Mineral Trap: China's Gallium Chokepoint",
+   "wiki": "Gallium",
    "graphics": 3
   }
  ],
