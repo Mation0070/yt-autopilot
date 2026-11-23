@@ -450,24 +450,26 @@
   }
  ],
  "insights": {
-  "date": "2026-11-16",
+  "date": "2026-11-23",
   "learnings": [
-   "Lead Short titles with specific dollar amounts ($B/$T) combined with high-stakes tension words ('Gamble', 'Trap', 'Chokepoint').",
-   "Focus topic selection on defense technology, geopolitical bottlenecks, and semiconductor wars over standard corporate histories.",
-   "Aim for 45-second Shorts if visual pacing can sustain >70% retention, as these trigger YouTube's feed far better than 25-second clips.",
-   "Eliminate dry, academic titles like 'Data Integration and Modern Defense Technology' in favor of dramatic story hooks.",
-   "Front-load the first 10 seconds of long-form videos with intense narrative stakes to fix low early retention (currently averaging under 38%).",
-   "Acknowledge data noise: rely on view-through rate and retention metrics rather than raw sub count when testing new sub-niches."
+   "Use dollar values paired with conflict framing in titles (e.g., '$25 Billion Aviation Gamble' or 'China's Rare Earth Trap').",
+   "Focus content heavily on defense technology, semiconductor geopolitics, and trade chokepoints.",
+   "Keep Short titles concise and punchy; incorporate curiosity gaps using words like 'Trap', 'Gamble', 'Chokepoint', and 'Gatekeeper'.",
+   "Hook viewers in the first 3 seconds with high-stakes geopolitical implications rather than historical context.",
+   "Repurpose successful Short concepts into long-form videos rather than publishing raw long-form documentaries cold.",
+   "Maintain high retention on Shorts (>70% view duration) by pacing script transitions around specific structural bottlenecks or military implications."
   ],
   "double_down": [
-   "Semiconductor supply chain battles (e.g., ASML lithography monopolies, TSMC mega-fab bets).",
-   "Defense mega-projects and military resource chokepoints (e.g., rare earth monopolies, military aviation overspending).",
-   "Strategic maritime and infrastructure bottlenecks (e.g., Strait of Hormuz oil routes, subsea internet cable security)."
+   "US-China semiconductor export bans and equipment monopolies (ASML, TSMC, Nvidia)",
+   "Critical mineral supply chain bottlenecks and rare earth mineral wars",
+   "Strategic maritime chokepoints (Strait of Malacca, Suwalki Gap, Red Sea shipping routes)",
+   "Defense industrial base vulnerabilities (submarine shipbuilding, missile stockpiles, defense contractor monopolies)"
   ],
   "avoid": [
-   "Consumer luxury, retail, and commodities stories without geopolitical conflict (e.g., LVMH empire, diamond monopoly, Yiwu wholesale market).",
-   "Dry, descriptive title formats lacking strong narrative tension or clear stakes.",
-   "Releasing long-form content without repurposing proven Short hooks into compelling long-form intros."
+   "Generic corporate origin stories or luxury brand histories (e.g., LVMH, Diamond monopolies)",
+   "Dry academic titles formatted like Wikipedia entries (e.g., 'Palantir: Data Integration and Modern Defense Technology')",
+   "Long-form videos with unoptimized, descriptive-only titles lacking dynamic hooks",
+   "General retail/consumer wholesale topics without national security/geopolitical stakes"
   ]
  },
  "teased": [
