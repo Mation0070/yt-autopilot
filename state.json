@@ -41,7 +41,8 @@
   "Cosmas Maduka",
   "Christo Wiese",
   "James Mwangi",
-  "Safaricom"
+  "Safaricom",
+  "Kenya Airways"
  ],
  "uploads": [
   {
@@ -426,6 +427,15 @@
    "date": "2026-11-23 11:52",
    "topic": "Safaricom: The $10B Mobile Money Monopoly Rivals Couldn't Touch",
    "wiki": "Safaricom",
+   "graphics": 3
+  },
+  {
+   "kind": "long",
+   "title": "Kenya Airways: Debt Collapse and the Dream of Project Mawingu",
+   "id": "GMMMkfj03ds",
+   "date": "2026-11-23 15:34",
+   "topic": "Kenya Airways: The $2 Billion Debt Collapse of Africa's Pride",
+   "wiki": "Kenya Airways",
    "graphics": 3
   }
  ],
