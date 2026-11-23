@@ -40,7 +40,8 @@
   "Virginia-class submarine",
   "Rosatom",
   "Gallium",
-  "MIM-104 Patriot"
+  "MIM-104 Patriot",
+  "Northern Sea Route"
  ],
  "uploads": [
   {
@@ -447,6 +448,15 @@
    "topic": "The $1.1B Patriot Missile Economic Trap",
    "wiki": "MIM-104 Patriot",
    "graphics": 2
+  },
+  {
+   "kind": "long",
+   "title": "Russia's Arctic Shipping Gamble: The Hidden Cost of the Northern Sea Route",
+   "id": "sHGIwZeb7DM",
+   "date": "2026-11-23 14:43",
+   "topic": "Russia's $50 Billion Arctic Shipping Gamble",
+   "wiki": "Northern Sea Route",
+   "graphics": 1
   }
  ],
  "insights": {
