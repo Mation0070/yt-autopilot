@@ -41,7 +41,8 @@
   "Rosatom",
   "Gallium",
   "MIM-104 Patriot",
-  "Northern Sea Route"
+  "Northern Sea Route",
+  "Antimony"
  ],
  "uploads": [
   {
@@ -466,6 +467,15 @@
    "topic": "Russia's $50 Billion Arctic Shipping Gamble",
    "wiki": "Northern Sea Route",
    "graphics": 1
+  },
+  {
+   "kind": "short",
+   "title": "The Critical Element Behind Modern Defense #Shorts",
+   "id": "pRG6MlNNAvM",
+   "date": "2026-11-23 23:03",
+   "topic": "China's $2 Billion Munitions Trap",
+   "wiki": "Antimony",
+   "graphics": 3
   }
  ],
  "insights": {
