@@ -40,7 +40,8 @@
   "Andela",
   "Cosmas Maduka",
   "Christo Wiese",
-  "James Mwangi"
+  "James Mwangi",
+  "Safaricom"
  ],
  "uploads": [
   {
@@ -416,6 +417,15 @@
    "date": "2026-11-22 12:10",
    "topic": "James Mwangi: The $4B Turnaround of Equity Bank",
    "wiki": "James Mwangi",
+   "graphics": 3
+  },
+  {
+   "kind": "short",
+   "title": "Safaricom: The Mobile Money Gamble #Shorts",
+   "id": "j4Qrk5xGcus",
+   "date": "2026-11-23 11:52",
+   "topic": "Safaricom: The $10B Mobile Money Monopoly Rivals Couldn't Touch",
+   "wiki": "Safaricom",
    "graphics": 3
   }
  ],
