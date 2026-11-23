@@ -420,25 +420,24 @@
   }
  ],
  "insights": {
-  "date": "2026-11-16",
+  "date": "2026-11-23",
   "learnings": [
-   "Feature recognizable names or major brands in the title and thumbnail (e.g., Motsepe, Obasanjo, Ethiopian Airlines) instead of generic terms like 'Oil Machine' or 'Bribery Scam'.",
-   "Use specific dollar amounts ($3.7B, $11B) and clear conflict frames ('Strive Masiyiwa vs Robert Mugabe') in Short hooks to push retention past 100%.",
-   "Ensure long-form video hooks immediately present the core story within the first 15 seconds to prevent steep early drop-off.",
-   "Use high-performing Short topics as proof-of-concept tests before committing resources to long-form deep dives.",
-   "Avoid standalone 'Exposed:' titles unless paired with a household brand name or well-known public figure.",
-   "Maintain tight pacing in the first 60 seconds of long-form videos, as videos dropping below 10% retention suffer from weak intro hooks."
+   "Anchor titles and hooks to famous names, political figures, or global corporate brands rather than generic descriptors.",
+   "Pair high dollar amounts with conflict or gamble words (e.g., '$1B Gamble', '$5.2B Fine') to drive higher initial click-throughs.",
+   "Eliminate generic 'Exposed:' phrasing without brand context, as these consistently yield under 5 views.",
+   "Optimize Short pacing for 45-60 seconds while keeping visual/script density high enough to maintain over 80% audience retention.",
+   "Fix long-form video openings: current long-form retention drops within the first 60 seconds (12% overall retention), requiring immediate story hooks instead of slow introductions.",
+   "Use the title format '[Entity/Person]: [High-Stakes Action or Financial Consequence]' for maximum clarity and intrigue."
   ],
   "double_down": [
-   "Billionaire empire origin and strategy stories (e.g., Johann Rupert, Aliko Dangote's Refinery, Abdulsamad Rabiu/BUA Group)",
-   "Political vs. Business battles in Africa (e.g., Econet vs Zimbabwean government, South African state capture deep dives)",
-   "African tech unicorn acquisition and founder sagas featuring named founders (e.g., Paystack, Flutterwave, Moniepoint)",
-   "Pan-African infrastructure and airline success/crisis stories (e.g., Ethiopian Airlines expansion strategy, RwandAir)"
+   "Profiles of national airline bets and infrastructure gambles (e.g., Kenya Airways, Ethiopian Airlines expansion, South African Airways history).",
+   "High-stakes tech and telecom corporate wars in Africa (e.g., Safaricom vs regulators, MTN international fines, Airtel battles).",
+   "Billionaire origin stories paired with explicit net-worth figures (e.g., Strive Masiyiwa, Aliko Dangote, Patrice Motsepe)."
   ],
   "avoid": [
-   "Generic scandal titles lacking named figures or brands (e.g., 'Exposed: The Oil Bribery Scam', 'Global Oil Machine')",
-   "Broad macro-economic evolution videos without a central protagonist",
-   "Slow-paced long-form intros that result in single-digit retention percentages"
+   "Generic scandal titles lacking specific names (e.g., 'Exposed: The Oil Bribery Scam', 'Exposed: $5B Looted').",
+   "Unedited long-form formats without aggressive pacing or strong early retention hooks.",
+   "Shorts shorter than 20 seconds that fail to build a narrative arc or retain view percentage."
   ]
  },
  "teased": [
