@@ -42,7 +42,8 @@
   "Gallium",
   "MIM-104 Patriot",
   "Northern Sea Route",
-  "Antimony"
+  "Antimony",
+  "Rheinmetall"
  ],
  "uploads": [
   {
@@ -476,6 +477,15 @@
    "topic": "China's $2 Billion Munitions Trap",
    "wiki": "Antimony",
    "graphics": 3
+  },
+  {
+   "kind": "short",
+   "title": "Europe's Hidden Munitions Bottleneck #Shorts",
+   "id": "c09uirCGhe4",
+   "date": "2026-11-24 16:15",
+   "topic": "Europe's $30 Billion Munitions Bottleneck",
+   "wiki": "Rheinmetall",
+   "graphics": 2
   }
  ],
  "insights": {
