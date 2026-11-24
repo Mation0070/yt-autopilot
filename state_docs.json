@@ -43,7 +43,8 @@
   "MIM-104 Patriot",
   "Northern Sea Route",
   "Antimony",
-  "Rheinmetall"
+  "Rheinmetall",
+  "Newport News Shipbuilding"
  ],
  "uploads": [
   {
@@ -486,6 +487,15 @@
    "topic": "Europe's $30 Billion Munitions Bottleneck",
    "wiki": "Rheinmetall",
    "graphics": 2
+  },
+  {
+   "kind": "short",
+   "title": "America's $5.1B Carrier Chokepoint #Shorts",
+   "id": "XnuuRw4vPZ4",
+   "date": "2026-11-24 22:59",
+   "topic": "The Navy's Drydock Nightmare",
+   "wiki": "Newport News Shipbuilding",
+   "graphics": 3
   }
  ],
  "insights": {
