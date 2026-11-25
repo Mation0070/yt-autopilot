@@ -44,7 +44,8 @@
   "Northern Sea Route",
   "Antimony",
   "Rheinmetall",
-  "Newport News Shipbuilding"
+  "Newport News Shipbuilding",
+  "Baykar"
  ],
  "uploads": [
   {
@@ -496,6 +497,15 @@
    "topic": "The Navy's Drydock Nightmare",
    "wiki": "Newport News Shipbuilding",
    "graphics": 3
+  },
+  {
+   "kind": "long",
+   "title": "Turkey's $5B Drone Trap: How Baykar Built a Military Gatekeeper",
+   "id": "CZ5cqs4_GvU",
+   "date": "2026-11-25 14:45",
+   "topic": "Turkey's $5B Drone Monopoly",
+   "wiki": "Baykar",
+   "graphics": 0
   }
  ],
  "insights": {
