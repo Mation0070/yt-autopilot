@@ -45,7 +45,8 @@
   "Antimony",
   "Rheinmetall",
   "Newport News Shipbuilding",
-  "Baykar"
+  "Baykar",
+  "KNDS"
  ],
  "uploads": [
   {
@@ -514,6 +515,15 @@
    "date": "2026-11-25 16:27",
    "topic": "Turkey's $5B Drone Monopoly",
    "wiki": "Baykar",
+   "graphics": 3
+  },
+  {
+   "kind": "short",
+   "title": "Europe's $50 Billion Artillery Shell Crisis #Shorts",
+   "id": "sSXI4YiJXrY",
+   "date": "2026-11-25 23:06",
+   "topic": "Europe's $50 Billion Artillery Shell Crisis",
+   "wiki": "KNDS",
    "graphics": 3
   }
  ],
