@@ -45,7 +45,8 @@
   "Kenya Airways",
   "Grand Ethiopian Renaissance Dam",
   "Arik Air",
-  "Airtel Africa"
+  "Airtel Africa",
+  "Tullow Oil"
  ],
  "uploads": [
   {
@@ -476,6 +477,15 @@
    "topic": "Airtel Africa: The $10.7 Billion African Telecom Gamble",
    "wiki": "Airtel Africa",
    "graphics": 3
+  },
+  {
+   "kind": "long",
+   "title": "Tullow Oil: $3 Billion Deepwater Gamble",
+   "id": "Wv5gvYYNrJs",
+   "date": "2026-11-25 15:25",
+   "topic": "Tullow Oil: The $3 Billion Deepwater Africa Gamble",
+   "wiki": "Tullow Oil",
+   "graphics": 7
   }
  ],
  "insights": {
