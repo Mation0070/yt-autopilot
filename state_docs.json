@@ -46,7 +46,8 @@
   "Rheinmetall",
   "Newport News Shipbuilding",
   "Baykar",
-  "KNDS"
+  "KNDS",
+  "Intel"
  ],
  "uploads": [
   {
@@ -524,6 +525,15 @@
    "date": "2026-11-25 23:06",
    "topic": "Europe's $50 Billion Artillery Shell Crisis",
    "wiki": "KNDS",
+   "graphics": 3
+  },
+  {
+   "kind": "short",
+   "title": "Intel's Multi-Billion Dollar Strategy Shift #Shorts",
+   "id": "alpwvzmRasw",
+   "date": "2026-11-26 16:09",
+   "topic": "Intel's $8.5 Billion Survival Gamble",
+   "wiki": "Intel",
    "graphics": 3
   }
  ],
