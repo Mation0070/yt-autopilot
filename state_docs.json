@@ -47,7 +47,8 @@
   "Newport News Shipbuilding",
   "Baykar",
   "KNDS",
-  "Intel"
+  "Intel",
+  "Neon"
  ],
  "uploads": [
   {
@@ -535,6 +536,15 @@
    "topic": "Intel's $8.5 Billion Survival Gamble",
    "wiki": "Intel",
    "graphics": 3
+  },
+  {
+   "kind": "short",
+   "title": "The Hidden Chokepoint of the Global Chip Market #Shorts",
+   "id": "f-VSeBP0uek",
+   "date": "2026-11-26 23:16",
+   "topic": "The $12 Billion Semiconductor Gas Trap",
+   "wiki": "Neon",
+   "graphics": 1
   }
  ],
  "insights": {
