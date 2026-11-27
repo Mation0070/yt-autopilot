@@ -48,7 +48,8 @@
   "Baykar",
   "KNDS",
   "Intel",
-  "Neon"
+  "Neon",
+  "Germanium"
  ],
  "uploads": [
   {
@@ -545,6 +546,15 @@
    "topic": "The $12 Billion Semiconductor Gas Trap",
    "wiki": "Neon",
    "graphics": 1
+  },
+  {
+   "kind": "long",
+   "title": "China's Defense Mineral Trap",
+   "id": "98Uj6GLTDHY",
+   "date": "2026-11-27 14:33",
+   "topic": "China's $50 Billion Defense Mineral Trap",
+   "wiki": "Germanium",
+   "graphics": 13
   }
  ],
  "insights": {
