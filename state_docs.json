@@ -49,7 +49,8 @@
   "KNDS",
   "Intel",
   "Neon",
-  "Germanium"
+  "Germanium",
+  "Ajinomoto"
  ],
  "uploads": [
   {
@@ -564,6 +565,15 @@
    "topic": "China's $50 Billion Defense Mineral Trap",
    "wiki": "Germanium",
    "graphics": 2
+  },
+  {
+   "kind": "short",
+   "title": "The $800B MSG Semiconductor Secret #Shorts",
+   "id": "X3Y3CSPE6EQ",
+   "date": "2026-11-27 22:58",
+   "topic": "The $800 Billion MSG Chip Trap",
+   "wiki": "Ajinomoto",
+   "graphics": 3
   }
  ],
  "insights": {
