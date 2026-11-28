@@ -50,7 +50,8 @@
   "Intel",
   "Neon",
   "Germanium",
-  "Ajinomoto"
+  "Ajinomoto",
+  "Graphite"
  ],
  "uploads": [
   {
@@ -573,6 +574,15 @@
    "date": "2026-11-27 22:58",
    "topic": "The $800 Billion MSG Chip Trap",
    "wiki": "Ajinomoto",
+   "graphics": 3
+  },
+  {
+   "kind": "short",
+   "title": "China's $30 Billion Battery Chokepoint #Shorts",
+   "id": "MEx3bwhZSWM",
+   "date": "2026-11-28 16:08",
+   "topic": "The $30 Billion Battery Gatekeeper",
+   "wiki": "Graphite",
    "graphics": 3
   }
  ],
