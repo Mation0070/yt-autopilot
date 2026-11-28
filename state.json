@@ -50,7 +50,8 @@
   "Mohammed Dewji",
   "Jim Ovia",
   "British American Tobacco",
-  "The New Capital"
+  "The New Capital",
+  "Choppies"
  ],
  "uploads": [
   {
@@ -543,6 +544,15 @@
    "date": "2026-11-27 17:57",
    "topic": "New Administrative Capital: Egypt's $58 Billion Megacity Gamble",
    "wiki": "The New Capital",
+   "graphics": 3
+  },
+  {
+   "kind": "short",
+   "title": "Choppies: How a Retail Empire Lost 4 Countries #Shorts",
+   "id": "A3-sGLA2mWg",
+   "date": "2026-11-28 11:46",
+   "topic": "Choppies: The $100M Supermarket Collapse Across Africa",
+   "wiki": "Choppies",
    "graphics": 3
   }
  ],
